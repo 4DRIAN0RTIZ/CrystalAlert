@@ -1,0 +1,42 @@
+{
+  "name": "crystal-alert",
+  "version": "1.0.0",
+  "description": "Lightweight alert & toast library with glassmorphism design",
+  "main": "dist/crystal-alert.min.js",
+  "style": "dist/crystal-alert.min.css",
+  "files": [
+    "dist/",
+    "crystal-alert.js",
+    "crystal-alert-styles.css",
+    "themes/"
+  ],
+  "keywords": [
+    "alert",
+    "toast",
+    "notification",
+    "modal",
+    "glassmorphism",
+    "dialog",
+    "popup"
+  ],
+  "author": "NeanderTech",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/4DRIAN0RTIZ/CrystalAlert"
+  },
+  "homepage": "https://github.com/4DRIAN0RTIZ/CrystalAlert#readme",
+  "bugs": {
+    "url": "https://github.com/4DRIAN0RTIZ/CrystalAlert/issues"
+  },
+  "scripts": {
+    "build": "mkdir -p dist/themes && terser crystal-alert.js -o dist/crystal-alert.min.js -c -m && cleancss crystal-alert-styles.css -o dist/crystal-alert.min.css && cleancss themes/crystal-alert-dark.css -o dist/themes/dark.min.css && cleancss themes/crystal-alert-minimal.css -o dist/themes/minimal.min.css",
+    "build:js": "terser crystal-alert.js -o dist/crystal-alert.min.js -c -m",
+    "build:css": "cleancss crystal-alert-styles.css -o dist/crystal-alert.min.css",
+    "build:themes": "cleancss themes/crystal-alert-dark.css -o dist/themes/dark.min.css && cleancss themes/crystal-alert-minimal.css -o dist/themes/minimal.min.css"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.31.0"
+  }
+}

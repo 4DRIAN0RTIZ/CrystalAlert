@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Crystal Alert - Modern Alert Library for JavaScript</title>
+  <meta name="description" content="A lightweight, promise-based alert and toast notification library with glassmorphism design. Zero dependencies.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
+  <link rel="stylesheet" href="crystal-alert-styles.css" />
+
+  <style>
+    :root {
+      --primary: #e38528;
+      --primary-light: #f5a64d;
+      --primary-dark: #c46d15;
+      --secondary: #222222;
+      --background: #fff8f0;
+      --text: #1a1a1a;
+      --muted: #6b6b6b;
+      --surface: rgba(255, 255, 255, 0.8);
+      --surface-elevated: rgba(255, 255, 255, 0.95);
+      --border: rgba(227, 133, 40, 0.15);
+      --code-bg: #1a1a1a;
+      --code-text: #f8f8f2;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 20px 50px rgba(227, 133, 40, 0.15);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--background);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* Navigation */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      background: rgba(255, 248, 240, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    nav.scrolled {
+      box-shadow: var(--shadow-sm);
+    }
+
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: var(--secondary);
+      text-decoration: none;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 0.9rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .nav-links a {
+      text-decoration: none;
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+
+    .nav-links a:hover {
+      color: var(--primary);
+    }
+
+    .nav-links .github-link {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--secondary);
+      color: white;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+
+    .nav-links .github-link:hover {
+      background: #333;
+      color: white;
+    }
+
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8rem 2rem 4rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(227, 133, 40, 0.15), transparent),
+        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(227, 133, 40, 0.08), transparent);
+      pointer-events: none;
+    }
+
+    .hero-content {
+      max-width: 900px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: rgba(227, 133, 40, 0.1);
+      border: 1px solid rgba(227, 133, 40, 0.2);
+      border-radius: 100px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--primary-dark);
+      margin-bottom: 2rem;
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: var(--primary);
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(1.2); }
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--secondary);
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .hero h1 span {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: 1.25rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto 2.5rem;
+      line-height: 1.7;
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-bottom: 4rem;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.9rem 1.75rem;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1rem;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+      border: none;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      color: white;
+      box-shadow: 0 4px 20px rgba(227, 133, 40, 0.4);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(227, 133, 40, 0.5);
+    }
+
+    .btn-secondary {
+      background: var(--surface-elevated);
+      color: var(--secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .hero-stats {
+      display: flex;
+      justify-content: center;
+      gap: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--secondary);
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+
+    /* Section Base */
+    section {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+    }
+
+    .section-header h2 {
+      font-size: 2.25rem;
+      font-weight: 800;
+      color: var(--secondary);
+      margin-bottom: 1rem;
+    }
+
+    .section-header p {
+      font-size: 1.1rem;
+      color: var(--muted);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    /* Features */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .feature-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 2rem;
+      transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-md);
+      border-color: rgba(227, 133, 40, 0.3);
+    }
+
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, rgba(227, 133, 40, 0.15), rgba(227, 133, 40, 0.05));
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.25rem;
+      color: var(--primary);
+      font-size: 1.25rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--secondary);
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Demo Section */
+    #demo {
+      background: linear-gradient(180deg, transparent, rgba(227, 133, 40, 0.03));
+    }
+
+    .demo-container {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: var(--shadow-md);
+    }
+
+    .demo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+
+    .demo-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.75rem;
+      padding: 1.25rem 1.5rem;
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      color: var(--secondary);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .demo-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .demo-btn i {
+      font-size: 1.1rem;
+    }
+
+    .demo-btn.success i { color: #059669; }
+    .demo-btn.error i { color: #dc2626; }
+    .demo-btn.warning i { color: #d97706; }
+    .demo-btn.info i { color: #2563eb; }
+    .demo-btn.confirm i { color: var(--primary); }
+    .demo-btn.toast i { color: #8b5cf6; }
+
+    /* Installation */
+    #install {
+      background: var(--secondary);
+      max-width: none;
+      padding: 6rem 2rem;
+    }
+
+    #install .section-header h2 {
+      color: white;
+    }
+
+    #install .section-header p {
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .install-wrapper {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .install-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .install-tab {
+      padding: 0.6rem 1.2rem;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 8px;
+      color: rgba(255, 255, 255, 0.7);
+      font-weight: 500;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .install-tab.active,
+    .install-tab:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .code-block {
+      background: #0d0d0d;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1rem;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .code-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .code-dots span {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+    }
+
+    .code-dots span:nth-child(1) { background: #ff5f56; }
+    .code-dots span:nth-child(2) { background: #ffbd2e; }
+    .code-dots span:nth-child(3) { background: #27c93f; }
+
+    .copy-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .code-content {
+      padding: 1.5rem;
+      overflow-x: auto;
+    }
+
+    .code-content pre {
+      margin: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: var(--code-text);
+    }
+
+    .code-content .tag { color: #ff79c6; }
+    .code-content .attr { color: #50fa7b; }
+    .code-content .string { color: #f1fa8c; }
+    .code-content .comment { color: #6272a4; }
+
+    /* API Section */
+    #api {
+      background: linear-gradient(180deg, rgba(227, 133, 40, 0.03), transparent);
+    }
+
+    .api-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+
+    .api-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .api-card-header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: rgba(227, 133, 40, 0.03);
+    }
+
+    .api-card-header h3 {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .api-card-body {
+      padding: 1.5rem;
+    }
+
+    .api-card-body p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .api-params {
+      list-style: none;
+    }
+
+    .api-params li {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.5rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    .api-params li:last-child {
+      border-bottom: none;
+    }
+
+    .api-param-name {
+      font-family: 'JetBrains Mono', monospace;
+      color: var(--secondary);
+      font-weight: 500;
+      min-width: 140px;
+    }
+
+    .api-param-desc {
+      color: var(--muted);
+    }
+
+    /* Footer */
+    footer {
+      background: var(--secondary);
+      padding: 4rem 2rem 2rem;
+      color: white;
+    }
+
+    .footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr;
+      gap: 4rem;
+    }
+
+    .footer-brand {
+      max-width: 300px;
+    }
+
+    .footer-brand .logo {
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .footer-brand p {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 0.95rem;
+      line-height: 1.7;
+    }
+
+    .footer-links h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1.25rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-links ul {
+      list-style: none;
+    }
+
+    .footer-links li {
+      margin-bottom: 0.75rem;
+    }
+
+    .footer-links a {
+      color: rgba(255, 255, 255, 0.8);
+      text-decoration: none;
+      font-size: 0.95rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-links a:hover {
+      color: var(--primary);
+    }
+
+    .footer-bottom {
+      max-width: 1200px;
+      margin: 3rem auto 0;
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .footer-social a {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 1.25rem;
+      transition: color 0.2s ease;
+    }
+
+    .footer-social a:hover {
+      color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .nav-links {
+        display: none;
+      }
+
+      .hero {
+        padding: 7rem 1.5rem 3rem;
+      }
+
+      .hero-stats {
+        flex-direction: column;
+        gap: 1.5rem;
+      }
+
+      section {
+        padding: 4rem 1.5rem;
+      }
+
+      .footer-content {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .footer-bottom {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+      }
+    }
+
+    /* Mobile nav toggle */
+    .nav-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--secondary);
+      cursor: pointer;
+    }
+
+    @media (max-width: 768px) {
+      .nav-toggle {
+        display: block;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<nav id="navbar">
+  <div class="nav-container">
+    <a class="logo" href="#">
+      <div class="logo-icon"><i class="fa-regular fa-gem"></i></div>
+      Crystal Alert
+    </a>
+    <div class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#demo">Demo</a>
+      <a href="#install">Install</a>
+      <a href="#api">API</a>
+      <a href="https://github.com/4drian0rtiz" target="_blank" class="github-link">
+        <i class="fa-brands fa-github"></i>
+        GitHub
+      </a>
+    </div>
+    <button class="nav-toggle" aria-label="Toggle navigation">
+      <i class="fa-solid fa-bars"></i>
+    </button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <div class="hero-badge">Vanilla JS - Zero Dependencies</div>
+    <h1>Beautiful alerts for <span>modern web apps</span></h1>
+    <p class="hero-subtitle">
+      A lightweight, promise-based notification library with glassmorphism design.
+      No frameworks needed. Just drop it in and go.
+    </p>
+    <div class="hero-cta">
+      <a href="#install" class="btn btn-primary">
+        <i class="fa-solid fa-download"></i>
+        Get Started
+      </a>
+      <a href="#demo" class="btn btn-secondary">
+        <i class="fa-solid fa-play"></i>
+        Live Demo
+      </a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-value">&lt;5KB</div>
+        <div class="stat-label">Gzipped</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">0</div>
+        <div class="stat-label">Dependencies</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">ES6+</div>
+        <div class="stat-label">Modern JS</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-header">
+    <h2>Why Crystal Alert?</h2>
+    <p>Built for developers who value simplicity, performance, and great UX.</p>
+  </div>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-feather"></i>
+      </div>
+      <h3>Lightweight</h3>
+      <p>Under 5KB gzipped with no external dependencies. Your bundle stays lean.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-bolt"></i>
+      </div>
+      <h3>Promise-based</h3>
+      <p>Async/await support out of the box. Handle confirmations elegantly with promises.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-palette"></i>
+      </div>
+      <h3>Glassmorphism UI</h3>
+      <p>Modern frosted glass aesthetic with smooth animations and subtle shadows.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-plug"></i>
+      </div>
+      <h3>Drop-in Ready</h3>
+      <p>Works with any stack. No build tools required. Include and start using.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-universal-access"></i>
+      </div>
+      <h3>Accessible</h3>
+      <p>ARIA attributes, focus management, and keyboard navigation built in.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+      <h3>Customizable</h3>
+      <p>CSS custom properties for easy theming. Adapt to your brand in minutes.</p>
+    </div>
+  </div>
+</section>
+
+<section id="demo">
+  <div class="section-header">
+    <h2>Interactive Demo</h2>
+    <p>Click any button below to see Crystal Alert in action.</p>
+  </div>
+  <div class="demo-container">
+    <h4 style="margin: 0 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Basic Alerts</h4>
+    <div class="demo-grid">
+      <button class="demo-btn success" onclick="Crystal.fire({title:'Success!',text:'Your changes have been saved.',icon:'success'})">
+        <i class="fa-solid fa-circle-check"></i>
+        Success Alert
+      </button>
+      <button class="demo-btn error" onclick="Crystal.fire({title:'Error',text:'Something went wrong. Please try again.',icon:'error'})">
+        <i class="fa-solid fa-circle-xmark"></i>
+        Error Alert
+      </button>
+      <button class="demo-btn warning" onclick="Crystal.fire({title:'Warning',text:'This action may have consequences.',icon:'warning'})">
+        <i class="fa-solid fa-triangle-exclamation"></i>
+        Warning Alert
+      </button>
+      <button class="demo-btn info" onclick="Crystal.fire({title:'Information',text:'Here is some useful information.',icon:'info'})">
+        <i class="fa-solid fa-circle-info"></i>
+        Info Alert
+      </button>
+      <button class="demo-btn confirm" onclick="confirmDemo()">
+        <i class="fa-solid fa-question"></i>
+        Confirmation
+      </button>
+      <button class="demo-btn toast" onclick="toastDemo()">
+        <i class="fa-solid fa-bell"></i>
+        Toast Notification
+      </button>
+    </div>
+
+    <h4 style="margin: 2rem 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Advanced Features</h4>
+    <div class="demo-grid">
+      <button class="demo-btn" onclick="htmlContentDemo()" style="border-color: #8b5cf6;">
+        <i class="fa-solid fa-code" style="color: #8b5cf6;"></i>
+        HTML Content
+      </button>
+      <button class="demo-btn" onclick="customIconDemo()" style="border-color: #ec4899;">
+        <i class="fa-solid fa-star" style="color: #ec4899;"></i>
+        Custom Icon
+      </button>
+      <button class="demo-btn" onclick="asyncDemo()" style="border-color: #10b981;">
+        <i class="fa-solid fa-spinner" style="color: #10b981;"></i>
+        Async Confirm
+      </button>
+      <button class="demo-btn" onclick="timerDemo()" style="border-color: #ef4444;">
+        <i class="fa-solid fa-clock" style="color: #ef4444;"></i>
+        Auto-close Timer
+      </button>
+      <button class="demo-btn" onclick="toastPositionDemo()" style="border-color: #f59e0b;">
+        <i class="fa-solid fa-arrows-up-down-left-right" style="color: #f59e0b;"></i>
+        Toast Positions
+      </button>
+    </div>
+
+    <h4 style="margin: 2rem 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Themes (CSS-based)</h4>
+    <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr);">
+      <button class="demo-btn" onclick="switchTheme('default')">
+        <i class="fa-solid fa-sun" style="color: #fbbf24;"></i>
+        Default (Glass)
+      </button>
+      <button class="demo-btn" onclick="switchTheme('dark')">
+        <i class="fa-solid fa-moon" style="color: #6366f1;"></i>
+        Dark
+      </button>
+      <button class="demo-btn" onclick="switchTheme('minimal')">
+        <i class="fa-solid fa-minus" style="color: #111;"></i>
+        Minimal
+      </button>
+    </div>
+  </div>
+</section>
+
+<section id="install">
+  <div class="section-header">
+    <h2>Quick Installation</h2>
+    <p>Get started in under a minute.</p>
+  </div>
+  <div class="install-wrapper">
+    <div class="install-tabs">
+      <button class="install-tab active" data-tab="cdn">CDN</button>
+      <button class="install-tab" data-tab="download">Download</button>
+    </div>
+    <div class="code-block" id="cdn-code">
+      <div class="code-header">
+        <div class="code-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <button class="copy-btn" onclick="copyCode(this)">
+          <i class="fa-regular fa-copy"></i> Copy
+        </button>
+      </div>
+      <div class="code-content">
+<pre><span class="comment">&lt;!-- Base styles (includes glassmorphism theme) --&gt;</span>
+<span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"crystal-alert-styles.css"</span><span class="tag">&gt;</span>
+
+<span class="comment">&lt;!-- Optional: Include a theme directly --&gt;</span>
+<span class="tag">&lt;link</span> <span class="attr">rel</span>=<span class="string">"stylesheet"</span> <span class="attr">href</span>=<span class="string">"themes/crystal-alert-dark.css"</span><span class="tag">&gt;</span>
+
+<span class="comment">&lt;!-- Or load themes dynamically with JS --&gt;</span>
+<span class="tag">&lt;script</span> <span class="attr">src</span>=<span class="string">"crystal-alert.js"</span><span class="tag">&gt;&lt;/script&gt;</span>
+<span class="tag">&lt;script&gt;</span>Crystal.setTheme('dark');<span class="tag">&lt;/script&gt;</span></pre>
+      </div>
+    </div>
+    <div class="code-block" id="download-code" style="display:none;">
+      <div class="code-header">
+        <div class="code-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <button class="copy-btn" onclick="copyCode(this)">
+          <i class="fa-regular fa-copy"></i> Copy
+        </button>
+      </div>
+      <div class="code-content">
+<pre><span class="comment"># Clone the repository</span>
+git clone https://github.com/4drian0rtiz/crystal-alert.git
+
+<span class="comment"># Copy core files</span>
+cp crystal-alert/crystal-alert.js your-project/
+cp crystal-alert/crystal-alert-styles.css your-project/
+
+<span class="comment"># Copy themes (optional)</span>
+cp -r crystal-alert/themes your-project/</pre>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="api">
+  <div class="section-header">
+    <h2>API Reference</h2>
+    <p>Simple methods for all your notification needs.</p>
+  </div>
+  <div class="api-grid">
+    <div class="api-card">
+      <div class="api-card-header">
+        <h3>Crystal.fire(options)</h3>
+      </div>
+      <div class="api-card-body">
+        <p>Display a modal alert dialog. Returns a Promise.</p>
+        <ul class="api-params">
+          <li>
+            <span class="api-param-name">title</span>
+            <span class="api-param-desc">The alert title text</span>
+          </li>
+          <li>
+            <span class="api-param-name">text</span>
+            <span class="api-param-desc">Plain text content</span>
+          </li>
+          <li>
+            <span class="api-param-name">html</span>
+            <span class="api-param-desc">HTML content (overrides text)</span>
+          </li>
+          <li>
+            <span class="api-param-name">icon</span>
+            <span class="api-param-desc">success | error | warning | info</span>
+          </li>
+          <li>
+            <span class="api-param-name">iconHtml</span>
+            <span class="api-param-desc">Custom HTML for icon</span>
+          </li>
+          <li>
+            <span class="api-param-name">showCloseButton</span>
+            <span class="api-param-desc">Show X button in corner</span>
+          </li>
+          <li>
+            <span class="api-param-name">showCancelButton</span>
+            <span class="api-param-desc">Show cancel button</span>
+          </li>
+          <li>
+            <span class="api-param-name">preConfirm</span>
+            <span class="api-param-desc">Async function before confirm</span>
+          </li>
+          <li>
+            <span class="api-param-name">onOpen / onClose</span>
+            <span class="api-param-desc">Lifecycle callbacks</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="api-card">
+      <div class="api-card-header">
+        <h3>Crystal.toast(options)</h3>
+      </div>
+      <div class="api-card-body">
+        <p>Display a non-blocking toast notification.</p>
+        <ul class="api-params">
+          <li>
+            <span class="api-param-name">title</span>
+            <span class="api-param-desc">The toast title text</span>
+          </li>
+          <li>
+            <span class="api-param-name">text / html</span>
+            <span class="api-param-desc">Content (plain or HTML)</span>
+          </li>
+          <li>
+            <span class="api-param-name">icon / iconHtml</span>
+            <span class="api-param-desc">Built-in or custom icon</span>
+          </li>
+          <li>
+            <span class="api-param-name">duration</span>
+            <span class="api-param-desc">Auto-dismiss ms (0 = persistent)</span>
+          </li>
+          <li>
+            <span class="api-param-name">position</span>
+            <span class="api-param-desc">top-right | top-left | bottom-right | bottom-left</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="api-card">
+      <div class="api-card-header">
+        <h3>Crystal.setTheme(name)</h3>
+      </div>
+      <div class="api-card-body">
+        <p>Load a theme CSS file. Returns a Promise.</p>
+        <ul class="api-params">
+          <li>
+            <span class="api-param-name">name</span>
+            <span class="api-param-desc">default | dark | minimal | custom</span>
+          </li>
+          <li>
+            <span class="api-param-name">returns</span>
+            <span class="api-param-desc">Promise that resolves when loaded</span>
+          </li>
+        </ul>
+        <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; text-align: left;">
+          <span style="color: #6272a4;">// Load dark theme</span><br>
+          <span style="color: #6366f1;">await Crystal</span>.<span style="color: #059669;">setTheme</span>(<span style="color: #d97706;">'dark'</span>);<br><br>
+          <span style="color: #6272a4;">// Custom theme path</span><br>
+          <span style="color: #6366f1;">Crystal</span>.<span style="color: #059669;">setThemePath</span>(<span style="color: #d97706;">'/css/themes/'</span>);<br>
+          <span style="color: #6366f1;">await Crystal</span>.<span style="color: #059669;">setTheme</span>(<span style="color: #d97706;">'brand'</span>);
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-content">
+    <div class="footer-brand">
+      <a class="logo" href="#">
+        <div class="logo-icon"><i class="fa-regular fa-gem"></i></div>
+        Crystal Alert
+      </a>
+      <p>A modern, lightweight notification library for the web. Open source and free to use.</p>
+    </div>
+    <div class="footer-links">
+      <h4>Resources</h4>
+      <ul>
+        <li><a href="#install">Installation</a></li>
+        <li><a href="#api">Documentation</a></li>
+        <li><a href="#demo">Examples</a></li>
+      </ul>
+    </div>
+    <div class="footer-links">
+      <h4>Community</h4>
+      <ul>
+        <li><a href="https://github.com/4drian0rtiz" target="_blank">GitHub</a></li>
+        <li><a href="https://github.com/4drian0rtiz/crystal-alert/issues" target="_blank">Issues</a></li>
+        <li><a href="https://github.com/4drian0rtiz/crystal-alert/releases" target="_blank">Releases</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>2026 Crystal Alert. Open Source under MIT License.</p>
+    <div class="footer-social">
+      <a href="https://github.com/4drian0rtiz" target="_blank" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+      </a>
+      <a href="https://twitter.com/4drian0rtiz" target="_blank" aria-label="Twitter">
+        <i class="fa-brands fa-twitter"></i>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script src="crystal-alert.js"></script>
+<script>
+  // Nav scroll effect
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  // Theme switcher
+  async function switchTheme(name) {
+    await Crystal.setTheme(name);
+    const themeNames = {
+      'default': 'Default (Glassmorphism)',
+      'dark': 'Dark Theme',
+      'minimal': 'Minimal Theme'
+    };
+    Crystal.fire({
+      title: themeNames[name] || name,
+      text: 'Theme loaded via CSS file.',
+      icon: 'info'
+    });
+  }
+
+  // Demo functions
+  function confirmDemo() {
+    Crystal.fire({
+      title: 'Are you sure?',
+      text: 'This action cannot be undone.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Yes, proceed',
+      cancelButtonText: 'Cancel'
+    }).then(result => {
+      if (result) {
+        Crystal.toast({ title: 'Confirmed!', text: 'Action completed successfully.', icon: 'success' });
+      }
+    });
+  }
+
+  function toastDemo() {
+    const types = ['success', 'error', 'warning', 'info'];
+    const messages = [
+      { title: 'Success!', text: 'Your file has been uploaded.' },
+      { title: 'Error', text: 'Failed to save changes.' },
+      { title: 'Warning', text: 'Your session will expire soon.' },
+      { title: 'New Message', text: 'You have 3 unread messages.' }
+    ];
+    const random = Math.floor(Math.random() * types.length);
+    Crystal.toast({
+      title: messages[random].title,
+      text: messages[random].text,
+      icon: types[random]
+    });
+  }
+
+  function htmlContentDemo() {
+    Crystal.fire({
+      title: 'Subscribe to Newsletter',
+      html: `
+        <div class="ca-html-content">
+          <input type="email" id="email-input" placeholder="Enter your email" style="margin-bottom: 0.75rem;">
+          <select style="margin-bottom: 0;">
+            <option>Daily digest</option>
+            <option>Weekly summary</option>
+            <option>Monthly updates</option>
+          </select>
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: 'Subscribe',
+      preConfirm: () => {
+        const email = document.getElementById('email-input').value;
+        return email || 'no-email@example.com';
+      }
+    }).then(result => {
+      if (result) {
+        Crystal.toast({ title: 'Subscribed!', text: `Email: ${result}`, icon: 'success' });
+      }
+    });
+  }
+
+  function customIconDemo() {
+    Crystal.fire({
+      title: 'Custom Icon',
+      text: 'You can use any HTML as an icon: Font Awesome, images, SVGs, or even emojis.',
+      iconHtml: '<i class="fa-solid fa-rocket" style="font-size: 2rem; color: #ec4899;"></i>'
+    });
+  }
+
+  function asyncDemo() {
+    Crystal.fire({
+      title: 'Save Changes?',
+      text: 'This will simulate an API call with loading state.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Save',
+      preConfirm: async () => {
+        // Simulate API call
+        await new Promise(r => setTimeout(r, 2000));
+        return { saved: true, timestamp: Date.now() };
+      }
+    }).then(result => {
+      if (result && result.saved) {
+        Crystal.toast({ title: 'Saved!', text: 'Changes saved successfully.', icon: 'success' });
+      }
+    });
+  }
+
+  function timerDemo() {
+    let countdown = 5;
+    Crystal.fire({
+      title: 'Auto-closing Alert',
+      html: `<p class="ca-text">This alert will close in <strong id="timer-count">${countdown}</strong> seconds.</p>`,
+      icon: 'info',
+      confirmButtonText: 'Close now',
+      onOpen: (modal) => {
+        const timerEl = modal.querySelector('#timer-count');
+        const interval = setInterval(() => {
+          countdown--;
+          if (timerEl) timerEl.textContent = countdown;
+          if (countdown <= 0) {
+            clearInterval(interval);
+            Crystal.close(null);
+          }
+        }, 1000);
+      }
+    });
+  }
+
+  async function toastPositionDemo() {
+    const positions = ['top-right', 'top-left', 'bottom-right', 'bottom-left'];
+    const duration = 1500;
+
+    for (const pos of positions) {
+      Crystal.toast({
+        title: pos,
+        text: 'Toast in this position',
+        icon: 'info',
+        position: pos,
+        duration: duration
+      });
+      await new Promise(r => setTimeout(r, duration + 400));
+    }
+  }
+
+  // Copy code function
+  function copyCode(btn) {
+    const codeBlock = btn.closest('.code-block');
+    const code = codeBlock.querySelector('pre').innerText;
+    navigator.clipboard.writeText(code).then(() => {
+      btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied!';
+      setTimeout(() => {
+        btn.innerHTML = '<i class="fa-regular fa-copy"></i> Copy';
+      }, 2000);
+    });
+  }
+
+  // Install tabs
+  document.querySelectorAll('.install-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.install-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+
+      const tabName = tab.dataset.tab;
+      document.getElementById('cdn-code').style.display = tabName === 'cdn' ? 'block' : 'none';
+      document.getElementById('download-code').style.display = tabName === 'download' ? 'block' : 'none';
+    });
+  });
+</script>
+
+</body>
+</html>
