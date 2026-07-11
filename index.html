@@ -8,27 +8,40 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
   <link rel="stylesheet" href="crystal-alert-styles.css" />
 
   <style>
     :root {
-      --primary: #e38528;
-      --primary-light: #f5a64d;
-      --primary-dark: #c46d15;
-      --secondary: #222222;
-      --background: #fff8f0;
-      --text: #1a1a1a;
-      --muted: #6b6b6b;
-      --surface: rgba(255, 255, 255, 0.8);
-      --surface-elevated: rgba(255, 255, 255, 0.95);
-      --border: rgba(227, 133, 40, 0.15);
-      --code-bg: #1a1a1a;
-      --code-text: #f8f8f2;
-      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
-      --shadow-md: 0 8px 30px rgba(0, 0, 0, 0.08);
-      --shadow-lg: 0 20px 50px rgba(227, 133, 40, 0.15);
+      --font-display: 'Fraunces', Georgia, serif;
+      --font-body: 'IBM Plex Sans', system-ui, -apple-system, sans-serif;
+      --font-code: 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+
+      --primary: #c96f1b;
+      --primary-light: #ffb45d;
+      --primary-dark: #88440a;
+      --secondary: #20160f;
+      --background: #f6eadb;
+      --text: #241910;
+      --muted: #76624f;
+      --muted-strong: #4c3d31;
+      --surface: rgba(255, 249, 239, 0.74);
+      --surface-elevated: rgba(255, 252, 245, 0.94);
+      --surface-ink: #1d1713;
+      --border: rgba(111, 73, 36, 0.18);
+      --border-strong: rgba(111, 73, 36, 0.34);
+      --code-bg: #17120f;
+      --code-text: #f7e9d3;
+      --accent-cool: #2f7f8f;
+      --accent-rose: #b34a35;
+      --grid-line: rgba(93, 63, 34, 0.075);
+      --shadow-sm: 0 2px 10px rgba(50, 30, 10, 0.07);
+      --shadow-md: 0 16px 45px rgba(56, 35, 15, 0.12);
+      --shadow-lg: 0 30px 90px rgba(137, 73, 10, 0.22);
+      --radius-sm: 10px;
+      --radius-md: 18px;
+      --radius-lg: 28px;
     }
 
     * {
@@ -39,14 +52,72 @@
 
     html {
       scroll-behavior: smooth;
+      background: var(--background);
     }
 
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: var(--background);
+      font-family: var(--font-body);
+      background:
+        radial-gradient(circle at 16% 12%, rgba(255, 180, 93, 0.28), transparent 26rem),
+        radial-gradient(circle at 86% 8%, rgba(47, 127, 143, 0.14), transparent 22rem),
+        linear-gradient(90deg, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(180deg, var(--grid-line) 1px, transparent 1px),
+        var(--background);
+      background-size: auto, auto, 44px 44px, 44px 44px, auto;
       color: var(--text);
       line-height: 1.6;
       overflow-x: hidden;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.42;
+      background-image:
+        radial-gradient(circle at 1px 1px, rgba(32, 22, 15, 0.18) 1px, transparent 0);
+      background-size: 18px 18px;
+      mix-blend-mode: multiply;
+    }
+
+    ::selection {
+      background: rgba(201, 111, 27, 0.24);
+      color: var(--secondary);
+    }
+
+    :where(h1, h2, h3, .stat-value) {
+      font-family: var(--font-display);
+      font-variation-settings: 'SOFT' 40, 'WONK' 1;
+    }
+
+    :where(code, pre, .code-content pre, .api-card-header h3, .api-param-name) {
+      font-family: var(--font-code);
+    }
+
+    :where(a, button) {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    :where(a, button, input, select):focus-visible {
+      outline: 3px solid rgba(47, 127, 143, 0.38);
+      outline-offset: 4px;
+    }
+
+    .is-hidden {
+      display: none;
+    }
+
+    .ca-html-content input + select {
+      margin-top: 0.75rem;
+    }
+
+    .custom-rocket-icon {
+      font-size: 2rem;
+      color: #db2777;
     }
 
     /* Navigation */
@@ -56,108 +127,134 @@
       left: 0;
       right: 0;
       z-index: 1000;
-      background: rgba(255, 248, 240, 0.85);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      background: rgba(246, 234, 219, 0.78);
+      backdrop-filter: blur(22px) saturate(1.12);
+      -webkit-backdrop-filter: blur(22px) saturate(1.12);
       border-bottom: 1px solid var(--border);
-      transition: all 0.3s ease;
+      transition: box-shadow 0.3s ease, background 0.3s ease;
     }
 
     nav.scrolled {
-      box-shadow: var(--shadow-sm);
+      background: rgba(246, 234, 219, 0.92);
+      box-shadow: 0 12px 34px rgba(39, 25, 12, 0.08);
     }
 
     .nav-container {
-      max-width: 1200px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 1rem 2rem;
+      padding: 0.85rem 2rem;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 2rem;
     }
 
     .logo {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
+      gap: 0.75rem;
+      font-family: var(--font-display);
       font-weight: 800;
-      font-size: 1.25rem;
+      font-size: 1.18rem;
+      letter-spacing: -0.02em;
       color: var(--secondary);
       text-decoration: none;
+      white-space: nowrap;
     }
 
     .logo-icon {
-      width: 32px;
-      height: 32px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      border-radius: 8px;
+      width: 36px;
+      height: 36px;
+      background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.24), transparent 46%),
+        linear-gradient(145deg, var(--secondary), #553112 52%, var(--primary));
+      border: 1px solid rgba(255, 255, 255, 0.32);
+      border-radius: 12px 12px 12px 4px;
+      box-shadow: 0 10px 22px rgba(60, 34, 10, 0.18);
       display: flex;
       align-items: center;
       justify-content: center;
-      color: white;
+      color: #fff6e8;
       font-size: 0.9rem;
     }
 
     .nav-links {
       display: flex;
       align-items: center;
-      gap: 2rem;
+      gap: 0.35rem;
+      padding: 0.28rem;
+      background: rgba(255, 252, 245, 0.55);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55);
     }
 
     .nav-links a {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
       text-decoration: none;
-      color: var(--muted);
-      font-weight: 500;
-      font-size: 0.95rem;
-      transition: color 0.2s ease;
+      color: var(--muted-strong);
+      font-weight: 600;
+      font-size: 0.88rem;
+      line-height: 1;
+      padding: 0.72rem 0.95rem;
+      border-radius: 999px;
+      transition: color 0.2s ease, background 0.2s ease, transform 0.2s ease;
     }
 
     .nav-links a:hover {
-      color: var(--primary);
+      color: var(--secondary);
+      background: rgba(255, 255, 255, 0.72);
+      transform: translateY(-1px);
     }
 
     .nav-links .github-link {
       display: flex;
       align-items: center;
       gap: 0.5rem;
-      padding: 0.5rem 1rem;
+      margin-left: 0.15rem;
       background: var(--secondary);
-      color: white;
-      border-radius: 8px;
-      font-size: 0.9rem;
+      color: #fff6e8;
+      border: 1px solid rgba(32, 22, 15, 0.2);
+      box-shadow: 0 8px 18px rgba(32, 22, 15, 0.16);
     }
 
     .nav-links .github-link:hover {
-      background: #333;
+      background: #34251b;
       color: white;
+      transform: translateY(-2px);
     }
 
     /* Hero Section */
     .hero {
       min-height: 100vh;
-      display: flex;
+      max-width: 1240px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
       align-items: center;
-      justify-content: center;
-      padding: 8rem 2rem 4rem;
+      gap: clamp(2rem, 5vw, 5rem);
+      padding: 8.5rem 2rem 5rem;
       position: relative;
       overflow: hidden;
+      isolation: isolate;
     }
 
     .hero-bg {
       position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      inset: 5rem -6rem 1rem;
+      z-index: -1;
       background:
-        radial-gradient(ellipse 80% 50% at 50% -20%, rgba(227, 133, 40, 0.15), transparent),
-        radial-gradient(ellipse 60% 40% at 80% 60%, rgba(227, 133, 40, 0.08), transparent);
+        linear-gradient(115deg, transparent 0 42%, rgba(32, 22, 15, 0.08) 42% 42.4%, transparent 42.4%),
+        radial-gradient(ellipse 52% 40% at 26% 18%, rgba(255, 180, 93, 0.3), transparent 70%),
+        radial-gradient(ellipse 42% 36% at 84% 52%, rgba(47, 127, 143, 0.15), transparent 72%);
       pointer-events: none;
     }
 
     .hero-content {
-      max-width: 900px;
-      text-align: center;
+      max-width: 690px;
+      text-align: left;
       position: relative;
       z-index: 1;
     }
@@ -165,122 +262,352 @@
     .hero-badge {
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.5rem 1rem;
-      background: rgba(227, 133, 40, 0.1);
-      border: 1px solid rgba(227, 133, 40, 0.2);
-      border-radius: 100px;
-      font-size: 0.85rem;
-      font-weight: 600;
+      gap: 0.62rem;
+      padding: 0.46rem 0.82rem;
+      background: rgba(255, 252, 245, 0.62);
+      border: 1px solid var(--border-strong);
+      border-radius: 999px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--primary-dark);
-      margin-bottom: 2rem;
+      margin-bottom: 1.45rem;
     }
 
     .hero-badge::before {
       content: '';
-      width: 8px;
-      height: 8px;
-      background: var(--primary);
+      width: 0.58rem;
+      height: 0.58rem;
+      background: var(--accent-cool);
       border-radius: 50%;
-      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 0 6px rgba(47, 127, 143, 0.12);
+      animation: pulse 2.4s ease-in-out infinite;
     }
 
     @keyframes pulse {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.5; transform: scale(1.2); }
+      50% { opacity: 0.55; transform: scale(1.18); }
     }
 
     .hero h1 {
-      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-size: clamp(3.4rem, 7vw, 6.35rem);
       font-weight: 800;
-      line-height: 1.1;
+      line-height: 0.92;
       color: var(--secondary);
-      margin-bottom: 1.5rem;
-      letter-spacing: -0.02em;
+      margin-bottom: 1.35rem;
+      letter-spacing: -0.065em;
+      text-wrap: balance;
     }
 
     .hero h1 span {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      display: block;
+      color: var(--primary-dark);
+      text-shadow: 0 10px 34px rgba(201, 111, 27, 0.18);
     }
 
     .hero-subtitle {
-      font-size: 1.25rem;
-      color: var(--muted);
-      max-width: 600px;
-      margin: 0 auto 2.5rem;
-      line-height: 1.7;
+      font-size: clamp(1.08rem, 1.4vw, 1.28rem);
+      color: var(--muted-strong);
+      max-width: 570px;
+      margin: 0 0 1.35rem;
+      line-height: 1.72;
+    }
+
+    .hero-command {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 1.8rem;
+      padding: 0.82rem 1rem;
+      background: rgba(29, 23, 19, 0.94);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 999px;
+      box-shadow: 0 16px 36px rgba(32, 22, 15, 0.18);
+      color: var(--code-text);
+      font-family: var(--font-code);
+      font-size: 0.86rem;
+      white-space: nowrap;
+    }
+
+    .hero-command span {
+      color: var(--primary-light);
     }
 
     .hero-cta {
       display: flex;
-      gap: 1rem;
-      justify-content: center;
+      gap: 0.9rem;
+      justify-content: flex-start;
       flex-wrap: wrap;
-      margin-bottom: 4rem;
+      margin-bottom: 3.25rem;
     }
 
     .btn {
+      position: relative;
       display: inline-flex;
       align-items: center;
-      gap: 0.5rem;
-      padding: 0.9rem 1.75rem;
-      border-radius: 10px;
-      font-weight: 600;
-      font-size: 1rem;
+      justify-content: center;
+      gap: 0.62rem;
+      min-height: 3.25rem;
+      padding: 0.92rem 1.45rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.98rem;
       text-decoration: none;
-      transition: all 0.2s ease;
+      transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease;
       cursor: pointer;
-      border: none;
+      border: 1px solid transparent;
+      isolation: isolate;
+    }
+
+    .btn::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      z-index: -1;
+      border-radius: inherit;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.28), transparent 48%);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+    }
+
+    .btn:hover::after {
+      opacity: 1;
     }
 
     .btn-primary {
-      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-      color: white;
-      box-shadow: 0 4px 20px rgba(227, 133, 40, 0.4);
+      background: linear-gradient(135deg, var(--secondary), #4a2b14 48%, var(--primary));
+      color: #fff7ea;
+      border-color: rgba(32, 22, 15, 0.22);
+      box-shadow: 0 15px 34px rgba(91, 47, 9, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 30px rgba(227, 133, 40, 0.5);
+      box-shadow: 0 20px 44px rgba(91, 47, 9, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.28);
     }
 
     .btn-secondary {
-      background: var(--surface-elevated);
+      background: rgba(255, 252, 245, 0.72);
       color: var(--secondary);
-      border: 1px solid var(--border);
+      border-color: var(--border-strong);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68), 0 10px 24px rgba(56, 35, 15, 0.08);
     }
 
     .btn-secondary:hover {
-      background: white;
-      border-color: var(--primary);
-      color: var(--primary);
+      background: rgba(255, 255, 255, 0.9);
+      border-color: rgba(47, 127, 143, 0.42);
+      color: var(--accent-cool);
     }
 
     .hero-stats {
-      display: flex;
-      justify-content: center;
-      gap: 3rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+      max-width: 560px;
+      padding-top: 1.35rem;
+      border-top: 1px dashed var(--border-strong);
     }
 
     .stat {
-      text-align: center;
+      text-align: left;
     }
 
     .stat-value {
-      font-size: 1.75rem;
+      font-size: 1.9rem;
       font-weight: 800;
+      line-height: 1;
       color: var(--secondary);
     }
 
     .stat-label {
-      font-size: 0.85rem;
+      font-size: 0.78rem;
       color: var(--muted);
-      margin-top: 0.25rem;
+      margin-top: 0.35rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+    }
+
+    .hero-visual {
+      position: relative;
+      z-index: 1;
+      min-height: 520px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-visual::before {
+      content: '';
+      position: absolute;
+      width: 19rem;
+      height: 19rem;
+      border: 1px solid rgba(47, 127, 143, 0.2);
+      border-radius: 42% 58% 48% 52%;
+      transform: rotate(-18deg);
+      background: rgba(47, 127, 143, 0.06);
+    }
+
+    .mock-window {
+      position: relative;
+      width: min(100%, 470px);
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 30px;
+      background: linear-gradient(145deg, rgba(255, 252, 245, 0.88), rgba(244, 224, 199, 0.72));
+      box-shadow: var(--shadow-lg), inset 0 1px 0 rgba(255, 255, 255, 0.82);
+      overflow: hidden;
+      transform: rotate(1.6deg);
+    }
+
+    .mock-window::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.4), transparent 34%);
+      pointer-events: none;
+    }
+
+    .mock-window-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 1.1rem;
+      background: rgba(29, 23, 19, 0.92);
+      color: rgba(255, 247, 234, 0.74);
+      font-family: var(--font-code);
+      font-size: 0.74rem;
+    }
+
+    .mock-dots {
+      display: flex;
+      gap: 0.42rem;
+    }
+
+    .mock-dots span {
+      width: 0.72rem;
+      height: 0.72rem;
+      border-radius: 50%;
+      background: var(--primary-light);
+    }
+
+    .mock-dots span:nth-child(2) { background: #e8ca74; }
+    .mock-dots span:nth-child(3) { background: var(--accent-cool); }
+
+    .mock-stage {
+      position: relative;
+      min-height: 405px;
+      padding: 2.4rem 2rem 2rem;
+    }
+
+    .mock-code-chip {
+      display: inline-flex;
+      padding: 0.55rem 0.72rem;
+      border-radius: 12px;
+      background: rgba(29, 23, 19, 0.08);
+      color: var(--muted-strong);
+      font-family: var(--font-code);
+      font-size: 0.72rem;
+      border: 1px solid var(--border);
+    }
+
+    .mock-alert {
+      width: min(100%, 320px);
+      margin: 2rem auto 0;
+      padding: 1.45rem;
+      border-radius: 24px;
+      background: rgba(255, 255, 255, 0.72);
+      border: 1px solid rgba(255, 255, 255, 0.64);
+      box-shadow: 0 24px 50px rgba(55, 32, 10, 0.18);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .mock-alert-icon {
+      width: 3.2rem;
+      height: 3.2rem;
+      display: grid;
+      place-items: center;
+      margin-bottom: 1rem;
+      border-radius: 18px;
+      color: #fff7ea;
+      background: linear-gradient(145deg, var(--accent-cool), #174e59);
+      box-shadow: 0 12px 24px rgba(47, 127, 143, 0.22);
+    }
+
+    .mock-alert h3 {
+      font-size: 1.35rem;
+      color: var(--secondary);
+      margin-bottom: 0.35rem;
+    }
+
+    .mock-alert p {
+      color: var(--muted);
+      font-size: 0.94rem;
+      line-height: 1.55;
+      margin-bottom: 1.2rem;
+    }
+
+    .mock-actions {
+      display: flex;
+      gap: 0.65rem;
+    }
+
+    .mock-btn {
+      flex: 1;
+      padding: 0.72rem 0.85rem;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 252, 245, 0.82);
+      color: var(--secondary);
+      font-weight: 700;
+      font-size: 0.82rem;
+      text-align: center;
+    }
+
+    .mock-btn.confirm {
+      background: var(--secondary);
+      color: #fff7ea;
+      border-color: var(--secondary);
+    }
+
+    .mock-toast {
+      position: absolute;
+      right: -0.65rem;
+      bottom: 1.15rem;
+      max-width: 250px;
+      display: flex;
+      gap: 0.75rem;
+      align-items: flex-start;
+      padding: 0.9rem;
+      border-radius: 18px;
+      background: rgba(29, 23, 19, 0.94);
+      color: #fff7ea;
+      box-shadow: 0 18px 40px rgba(29, 23, 19, 0.22);
+      transform: rotate(-3deg);
+    }
+
+    .mock-toast i {
+      color: var(--primary-light);
+      margin-top: 0.15rem;
+    }
+
+    .mock-toast strong {
+      display: block;
+      font-size: 0.88rem;
+      line-height: 1.1;
+    }
+
+    .mock-toast span {
+      display: block;
+      margin-top: 0.2rem;
+      color: rgba(255, 247, 234, 0.7);
+      font-size: 0.78rem;
+      line-height: 1.35;
     }
 
     /* Section Base */
@@ -310,96 +637,288 @@
     }
 
     /* Features */
+    #features .section-header {
+      display: grid;
+      grid-template-columns: minmax(0, 0.82fr) minmax(280px, 0.55fr);
+      align-items: end;
+      gap: 2rem;
+      text-align: left;
+    }
+
+    #features .section-header p {
+      margin: 0;
+    }
+
     .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
     }
 
     .feature-card {
-      background: var(--surface-elevated);
+      position: relative;
+      min-height: 100%;
+      grid-column: span 4;
+      background: rgba(255, 252, 245, 0.7);
       border: 1px solid var(--border);
-      border-radius: 16px;
-      padding: 2rem;
-      transition: all 0.3s ease;
+      border-radius: var(--radius-md);
+      padding: 1.45rem;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      inset: 0 0 auto;
+      height: 4px;
+      background: linear-gradient(90deg, var(--primary), var(--accent-cool));
+      opacity: 0.28;
     }
 
     .feature-card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-5px);
       box-shadow: var(--shadow-md);
-      border-color: rgba(227, 133, 40, 0.3);
+      border-color: var(--border-strong);
     }
 
-    .feature-icon {
-      width: 48px;
-      height: 48px;
-      background: linear-gradient(135deg, rgba(227, 133, 40, 0.15), rgba(227, 133, 40, 0.05));
-      border-radius: 12px;
-      display: flex;
+    .feature-card.feature-primary {
+      grid-column: span 6;
+      grid-row: span 2;
+      padding: 2rem;
+      background:
+        radial-gradient(circle at 86% 10%, rgba(255, 180, 93, 0.22), transparent 15rem),
+        var(--surface-ink);
+      color: #fff7ea;
+      border-color: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 28px 70px rgba(32, 22, 15, 0.2);
+    }
+
+    .feature-card.feature-primary::before {
+      opacity: 0.9;
+    }
+
+    .feature-eyebrow {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      margin-bottom: 1.25rem;
-      color: var(--primary);
-      font-size: 1.25rem;
+      gap: 0.5rem;
+      margin-bottom: 1.1rem;
+      color: var(--primary-dark);
+      font-size: 0.74rem;
+      font-weight: 800;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    .feature-primary .feature-eyebrow {
+      color: var(--primary-light);
     }
 
     .feature-card h3 {
-      font-size: 1.1rem;
-      font-weight: 700;
+      font-size: clamp(1.2rem, 2vw, 1.75rem);
+      font-weight: 800;
+      line-height: 1.05;
       color: var(--secondary);
-      margin-bottom: 0.5rem;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.03em;
+    }
+
+    .feature-primary h3 {
+      color: #fff7ea;
+      font-size: clamp(2rem, 4vw, 3rem);
+      max-width: 10ch;
     }
 
     .feature-card p {
-      font-size: 0.95rem;
+      font-size: 0.98rem;
       color: var(--muted);
-      line-height: 1.6;
+      line-height: 1.65;
+    }
+
+    .feature-primary p {
+      color: rgba(255, 247, 234, 0.72);
+      max-width: 34rem;
+    }
+
+    .feature-code {
+      margin-top: 1.7rem;
+      padding: 1rem;
+      border-radius: 16px;
+      background: rgba(0, 0, 0, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: var(--code-text);
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      line-height: 1.65;
+      overflow-x: auto;
+    }
+
+    .feature-note {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-top: 1.3rem;
+      padding-top: 1rem;
+      border-top: 1px dashed rgba(255, 247, 234, 0.18);
+      color: rgba(255, 247, 234, 0.72);
+      font-size: 0.88rem;
+      font-weight: 600;
+    }
+
+    .feature-note strong {
+      color: #fff7ea;
+      font-family: var(--font-display);
+      font-size: 1.35rem;
+      line-height: 1;
+    }
+
+    .feature-glyph {
+      display: inline-grid;
+      place-items: center;
+      width: 2.4rem;
+      height: 2.4rem;
+      margin-bottom: 1rem;
+      border-radius: 14px;
+      background: rgba(201, 111, 27, 0.1);
+      color: var(--primary-dark);
+      border: 1px solid rgba(201, 111, 27, 0.16);
+    }
+
+    @media (max-width: 900px) {
+      #features .section-header {
+        grid-template-columns: 1fr;
+      }
+
+      .feature-card,
+      .feature-card.feature-primary {
+        grid-column: 1 / -1;
+      }
     }
 
     /* Demo Section */
     #demo {
-      background: linear-gradient(180deg, transparent, rgba(227, 133, 40, 0.03));
+      position: relative;
+      background: linear-gradient(180deg, transparent, rgba(47, 127, 143, 0.06));
     }
 
     .demo-container {
-      background: var(--surface-elevated);
+      display: grid;
+      grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+      gap: 1rem;
+      background: rgba(255, 252, 245, 0.62);
       border: 1px solid var(--border);
-      border-radius: 20px;
-      padding: 2.5rem;
+      border-radius: var(--radius-lg);
+      padding: 1rem;
       box-shadow: var(--shadow-md);
+    }
+
+    .demo-aside {
+      min-height: 100%;
+      padding: 1.5rem;
+      border-radius: calc(var(--radius-lg) - 8px);
+      background:
+        radial-gradient(circle at 80% 10%, rgba(255, 180, 93, 0.26), transparent 12rem),
+        var(--surface-ink);
+      color: #fff7ea;
+    }
+
+    .demo-aside .feature-eyebrow {
+      color: var(--primary-light);
+    }
+
+    .demo-aside h3 {
+      font-size: clamp(1.8rem, 3vw, 2.65rem);
+      line-height: 0.98;
+      letter-spacing: -0.05em;
+      margin-bottom: 1rem;
+      color: #fff7ea;
+    }
+
+    .demo-aside p {
+      color: rgba(255, 247, 234, 0.72);
+      line-height: 1.68;
+      margin-bottom: 1.4rem;
+    }
+
+    .demo-mini-card {
+      margin-top: 1.5rem;
+      padding: 1rem;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      font-family: var(--font-code);
+      font-size: 0.78rem;
+      color: var(--code-text);
+      line-height: 1.6;
+    }
+
+    .demo-panel {
+      padding: 1.25rem;
+    }
+
+    .demo-group + .demo-group {
+      margin-top: 1.55rem;
+      padding-top: 1.45rem;
+      border-top: 1px dashed var(--border-strong);
+    }
+
+    .demo-group-title {
+      margin: 0 0 0.9rem;
+      color: var(--muted-strong);
+      font-weight: 800;
+      font-size: 0.76rem;
+      text-transform: uppercase;
+      letter-spacing: 0.11em;
     }
 
     .demo-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 1rem;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .demo-grid.theme-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
     }
 
     .demo-btn {
+      position: relative;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 0.75rem;
-      padding: 1.25rem 1.5rem;
-      background: white;
+      justify-content: flex-start;
+      gap: 0.8rem;
+      min-height: 4rem;
+      padding: 1rem;
+      background: rgba(255, 255, 255, 0.64);
       border: 1px solid var(--border);
-      border-radius: 12px;
-      font-weight: 600;
+      border-radius: 18px;
+      font-weight: 700;
       font-size: 0.95rem;
       color: var(--secondary);
       cursor: pointer;
-      transition: all 0.2s ease;
+      text-align: left;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+      transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease, color 0.2s ease;
     }
 
     .demo-btn:hover {
-      border-color: var(--primary);
-      color: var(--primary);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow-sm);
+      border-color: var(--border-strong);
+      color: var(--primary-dark);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 26px rgba(56, 35, 15, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.82);
     }
 
     .demo-btn i {
-      font-size: 1.1rem;
+      display: inline-grid;
+      place-items: center;
+      width: 2.1rem;
+      height: 2.1rem;
+      border-radius: 12px;
+      background: rgba(255, 252, 245, 0.8);
+      font-size: 1rem;
+      flex: 0 0 auto;
     }
 
     .demo-btn.success i { color: #059669; }
@@ -408,70 +927,104 @@
     .demo-btn.info i { color: #2563eb; }
     .demo-btn.confirm i { color: var(--primary); }
     .demo-btn.toast i { color: #8b5cf6; }
+    .demo-btn.accent-purple i { color: #7c3aed; }
+    .demo-btn.accent-pink i { color: #db2777; }
+    .demo-btn.accent-green i { color: #059669; }
+    .demo-btn.accent-red i { color: #dc2626; }
+    .demo-btn.accent-amber i { color: #d97706; }
+    .demo-btn.theme-default i { color: #d97706; }
+    .demo-btn.theme-dark i { color: #6366f1; }
+    .demo-btn.theme-minimal i { color: #111; }
+
+    @media (max-width: 900px) {
+      .demo-container {
+        grid-template-columns: 1fr;
+      }
+    }
 
     /* Installation */
     #install {
-      background: var(--secondary);
+      position: relative;
+      background:
+        radial-gradient(circle at 18% 0%, rgba(255, 180, 93, 0.18), transparent 24rem),
+        radial-gradient(circle at 80% 80%, rgba(47, 127, 143, 0.16), transparent 26rem),
+        var(--secondary);
       max-width: none;
-      padding: 6rem 2rem;
+      padding: 6.5rem 2rem;
+      overflow: hidden;
     }
 
     #install .section-header h2 {
-      color: white;
+      color: #fff7ea;
     }
 
     #install .section-header p {
-      color: rgba(255, 255, 255, 0.7);
+      color: rgba(255, 247, 234, 0.68);
     }
 
     .install-wrapper {
-      max-width: 800px;
+      max-width: 920px;
       margin: 0 auto;
     }
 
     .install-tabs {
-      display: flex;
-      gap: 0.5rem;
+      display: inline-flex;
+      gap: 0.35rem;
       margin-bottom: 1rem;
+      padding: 0.32rem;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 999px;
     }
 
     .install-tab {
-      padding: 0.6rem 1.2rem;
-      background: rgba(255, 255, 255, 0.1);
+      padding: 0.68rem 1.15rem;
+      background: transparent;
       border: none;
-      border-radius: 8px;
-      color: rgba(255, 255, 255, 0.7);
-      font-weight: 500;
-      font-size: 0.9rem;
+      border-radius: 999px;
+      color: rgba(255, 247, 234, 0.64);
+      font-weight: 700;
+      font-size: 0.88rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
 
     .install-tab.active,
     .install-tab:hover {
-      background: rgba(255, 255, 255, 0.2);
-      color: white;
+      background: rgba(255, 247, 234, 0.14);
+      color: #fff7ea;
+      transform: translateY(-1px);
     }
 
     .code-block {
-      background: #0d0d0d;
-      border-radius: 12px;
+      background: #120d0a;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
       overflow: hidden;
       position: relative;
+      box-shadow: 0 30px 90px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .code-block::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), transparent 36%);
     }
 
     .code-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.75rem 1rem;
-      background: rgba(255, 255, 255, 0.05);
+      padding: 0.95rem 1rem;
+      background: rgba(255, 255, 255, 0.045);
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .code-dots {
       display: flex;
-      gap: 6px;
+      gap: 7px;
     }
 
     .code-dots span {
@@ -480,95 +1033,109 @@
       border-radius: 50%;
     }
 
-    .code-dots span:nth-child(1) { background: #ff5f56; }
-    .code-dots span:nth-child(2) { background: #ffbd2e; }
-    .code-dots span:nth-child(3) { background: #27c93f; }
+    .code-dots span:nth-child(1) { background: #e66b5b; }
+    .code-dots span:nth-child(2) { background: #e8ba57; }
+    .code-dots span:nth-child(3) { background: #68b684; }
 
     .copy-btn {
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      color: rgba(255, 255, 255, 0.7);
-      padding: 0.4rem 0.8rem;
-      border-radius: 6px;
+      background: rgba(255, 247, 234, 0.1);
+      border: 1px solid rgba(255, 247, 234, 0.1);
+      color: rgba(255, 247, 234, 0.72);
+      padding: 0.5rem 0.85rem;
+      border-radius: 999px;
+      font-weight: 700;
       font-size: 0.8rem;
       cursor: pointer;
-      transition: all 0.2s ease;
+      transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
     }
 
     .copy-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 247, 234, 0.18);
       color: white;
+      transform: translateY(-1px);
     }
 
     .code-content {
-      padding: 1.5rem;
+      padding: 1.55rem;
       overflow-x: auto;
     }
 
     .code-content pre {
       margin: 0;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 0.9rem;
-      line-height: 1.7;
+      font-family: var(--font-code);
+      font-size: 0.88rem;
+      line-height: 1.75;
       color: var(--code-text);
     }
 
-    .code-content .tag { color: #ff79c6; }
-    .code-content .attr { color: #50fa7b; }
-    .code-content .string { color: #f1fa8c; }
-    .code-content .comment { color: #6272a4; }
+    .code-content .tag { color: #ff8ab3; }
+    .code-content .attr { color: #86efac; }
+    .code-content .string { color: #fde68a; }
+    .code-content .comment { color: #8f9bad; }
 
     /* API Section */
     #api {
-      background: linear-gradient(180deg, rgba(227, 133, 40, 0.03), transparent);
+      background: linear-gradient(180deg, rgba(47, 127, 143, 0.06), transparent);
     }
 
     .api-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-      gap: 2rem;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1rem;
     }
 
     .api-card {
-      background: var(--surface-elevated);
+      grid-column: span 6;
+      background: rgba(255, 252, 245, 0.74);
       border: 1px solid var(--border);
-      border-radius: 16px;
+      border-radius: var(--radius-md);
       overflow: hidden;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.68);
+    }
+
+    .api-card:nth-child(3) {
+      grid-column: 3 / span 8;
     }
 
     .api-card-header {
-      padding: 1.25rem 1.5rem;
+      padding: 1rem 1.25rem;
       border-bottom: 1px solid var(--border);
-      background: rgba(227, 133, 40, 0.03);
+      background: rgba(201, 111, 27, 0.06);
     }
 
     .api-card-header h3 {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1rem;
-      font-weight: 600;
-      color: var(--primary);
+      font-family: var(--font-code);
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary-dark);
     }
 
     .api-card-body {
-      padding: 1.5rem;
+      padding: 1.35rem;
     }
 
     .api-card-body p {
-      font-size: 0.95rem;
-      color: var(--muted);
+      font-size: 0.96rem;
+      color: var(--muted-strong);
       margin-bottom: 1rem;
+      line-height: 1.65;
     }
 
     .api-params {
       list-style: none;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.32);
     }
 
     .api-params li {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(120px, 0.44fr) 1fr;
       gap: 0.75rem;
-      padding: 0.5rem 0;
+      padding: 0.72rem 0.85rem;
       border-bottom: 1px solid var(--border);
-      font-size: 0.9rem;
+      font-size: 0.88rem;
     }
 
     .api-params li:last-child {
@@ -576,15 +1143,32 @@
     }
 
     .api-param-name {
-      font-family: 'JetBrains Mono', monospace;
+      font-family: var(--font-code);
       color: var(--secondary);
-      font-weight: 500;
-      min-width: 140px;
+      font-weight: 700;
     }
 
     .api-param-desc {
       color: var(--muted);
     }
+
+    .theme-snippet {
+      margin-top: 1rem;
+      padding: 1rem;
+      background: rgba(29, 23, 19, 0.06);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      line-height: 1.65;
+      text-align: left;
+      overflow-x: auto;
+    }
+
+    .token-comment { color: #7b8794; }
+    .token-object { color: #4f46e5; }
+    .token-method { color: #047857; }
+    .token-string { color: #b45309; }
 
     /* Footer */
     footer {
@@ -671,23 +1255,129 @@
       color: var(--primary);
     }
 
+    /* Mobile nav toggle */
+    .nav-toggle {
+      display: none;
+      width: 2.75rem;
+      height: 2.75rem;
+      place-items: center;
+      background: rgba(255, 252, 245, 0.66);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 1.1rem;
+      color: var(--secondary);
+      cursor: pointer;
+    }
+
     /* Responsive */
+    @media (max-width: 1100px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+      }
+
+      .hero-visual {
+        min-height: 460px;
+      }
+
+      .api-card,
+      .api-card:nth-child(3) {
+        grid-column: 1 / -1;
+      }
+    }
+
     @media (max-width: 768px) {
+      .nav-container {
+        flex-wrap: wrap;
+      }
+
       .nav-links {
+        order: 3;
+        flex-basis: 100%;
         display: none;
+        align-items: stretch;
+        gap: 0.35rem;
+        border-radius: 24px;
+        padding: 0.5rem;
+      }
+
+      .nav-links.open {
+        display: flex;
+      }
+
+      .nav-links a {
+        justify-content: center;
+        text-align: center;
+      }
+
+      .nav-links .github-link {
+        margin-left: 0;
+        justify-content: center;
+      }
+
+      .nav-toggle {
+        display: grid;
       }
 
       .hero {
         padding: 7rem 1.5rem 3rem;
       }
 
-      .hero-stats {
+      .hero h1 {
+        font-size: clamp(3rem, 16vw, 4.6rem);
+      }
+
+      .hero-command {
+        max-width: 100%;
+        white-space: normal;
+      }
+
+      .hero-cta,
+      .mock-actions {
         flex-direction: column;
-        gap: 1.5rem;
+      }
+
+      .hero-stats {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .hero-visual {
+        min-height: 430px;
+      }
+
+      .mock-window {
+        transform: none;
+      }
+
+      .mock-stage {
+        min-height: 380px;
+        padding: 1.6rem 1rem 1rem;
+      }
+
+      .mock-toast {
+        right: 0.75rem;
+        left: 0.75rem;
+        max-width: none;
+        transform: none;
+      }
+
+      .demo-grid,
+      .demo-grid.theme-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .api-params li {
+        grid-template-columns: 1fr;
+        gap: 0.2rem;
       }
 
       section {
         padding: 4rem 1.5rem;
+      }
+
+      #install {
+        padding: 4.5rem 1.5rem;
       }
 
       .footer-content {
@@ -702,19 +1392,43 @@
       }
     }
 
-    /* Mobile nav toggle */
-    .nav-toggle {
-      display: none;
-      background: none;
-      border: none;
-      font-size: 1.5rem;
-      color: var(--secondary);
-      cursor: pointer;
+    @media (max-width: 480px) {
+      .nav-container {
+        padding-inline: 1rem;
+      }
+
+      .hero {
+        padding-inline: 1rem;
+      }
+
+      .hero-badge {
+        font-size: 0.68rem;
+      }
+
+      .btn {
+        width: 100%;
+      }
+
+      .demo-container,
+      .demo-panel,
+      .demo-aside {
+        padding: 1rem;
+      }
     }
 
-    @media (max-width: 768px) {
-      .nav-toggle {
-        display: block;
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
+
+      .mock-window,
+      .mock-toast {
+        transform: none;
       }
     }
   </style>
@@ -738,29 +1452,30 @@
         GitHub
       </a>
     </div>
-    <button class="nav-toggle" aria-label="Toggle navigation">
+    <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
       <i class="fa-solid fa-bars"></i>
     </button>
   </div>
 </nav>
 
 <section class="hero">
-  <div class="hero-bg"></div>
+  <div class="hero-bg" aria-hidden="true"></div>
   <div class="hero-content">
-    <div class="hero-badge">Vanilla JS - Zero Dependencies</div>
-    <h1>Beautiful alerts for <span>modern web apps</span></h1>
+    <div class="hero-badge">Vanilla JS · zero dependencies · v1.0</div>
+    <h1>Alerts with a hand-cut <span>crystal finish.</span></h1>
     <p class="hero-subtitle">
-      A lightweight, promise-based notification library with glassmorphism design.
-      No frameworks needed. Just drop it in and go.
+      Crystal Alert is a tiny promise-based dialog and toast library for teams
+      that want refined interactions without dragging in a framework.
     </p>
+    <div class="hero-command"><span>$</span> npm install crystal-alert</div>
     <div class="hero-cta">
       <a href="#install" class="btn btn-primary">
         <i class="fa-solid fa-download"></i>
-        Get Started
+        Install in 60 seconds
       </a>
       <a href="#demo" class="btn btn-secondary">
         <i class="fa-solid fa-play"></i>
-        Live Demo
+        Open playground
       </a>
     </div>
     <div class="hero-stats">
@@ -774,7 +1489,35 @@
       </div>
       <div class="stat">
         <div class="stat-value">ES6+</div>
-        <div class="stat-label">Modern JS</div>
+        <div class="stat-label">Native JS</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="mock-window">
+      <div class="mock-window-bar">
+        <div class="mock-dots"><span></span><span></span><span></span></div>
+        <span>crystal.alert.preview</span>
+      </div>
+      <div class="mock-stage">
+        <div class="mock-code-chip">Crystal.fire({ icon: 'success' })</div>
+        <div class="mock-alert">
+          <div class="mock-alert-icon"><i class="fa-solid fa-check"></i></div>
+          <h3>Changes saved</h3>
+          <p>A frosted modal with focus handling, async state, and a native Promise API.</p>
+          <div class="mock-actions">
+            <span class="mock-btn">Cancel</span>
+            <span class="mock-btn confirm">Continue</span>
+          </div>
+        </div>
+        <div class="mock-toast">
+          <i class="fa-solid fa-bell"></i>
+          <div>
+            <strong>Toast delivered</strong>
+            <span>Stacks neatly without blocking the page.</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -782,135 +1525,158 @@
 
 <section id="features">
   <div class="section-header">
-    <h2>Why Crystal Alert?</h2>
-    <p>Built for developers who value simplicity, performance, and great UX.</p>
+    <h2>Small library. Deliberate interaction details.</h2>
+    <p>Crystal Alert focuses on the little moments that usually feel bolted on: confirmation flows, toasts, async buttons, and brandable UI.</p>
   </div>
   <div class="features-grid">
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-feather"></i>
+    <article class="feature-card feature-primary">
+      <div class="feature-eyebrow">Core promise</div>
+      <h3>Async dialogs without ceremony.</h3>
+      <p>Use one promise-based API for modal alerts, confirmations, loading states, custom HTML, and lifecycle callbacks.</p>
+      <pre class="feature-code">const confirmed = await Crystal.fire({
+  title: 'Ship release?',
+  icon: 'warning',
+  showCancelButton: true,
+  preConfirm: deployBuild
+});</pre>
+      <div class="feature-note">
+        <span>Works with plain HTML, Laravel, React, Vue, or anything else.</span>
+        <strong>0 deps</strong>
       </div>
-      <h3>Lightweight</h3>
-      <p>Under 5KB gzipped with no external dependencies. Your bundle stays lean.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-bolt"></i>
-      </div>
-      <h3>Promise-based</h3>
-      <p>Async/await support out of the box. Handle confirmations elegantly with promises.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-palette"></i>
-      </div>
-      <h3>Glassmorphism UI</h3>
-      <p>Modern frosted glass aesthetic with smooth animations and subtle shadows.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-plug"></i>
-      </div>
-      <h3>Drop-in Ready</h3>
-      <p>Works with any stack. No build tools required. Include and start using.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-universal-access"></i>
-      </div>
-      <h3>Accessible</h3>
-      <p>ARIA attributes, focus management, and keyboard navigation built in.</p>
-    </div>
-    <div class="feature-card">
-      <div class="feature-icon">
-        <i class="fa-solid fa-sliders"></i>
-      </div>
-      <h3>Customizable</h3>
-      <p>CSS custom properties for easy theming. Adapt to your brand in minutes.</p>
-    </div>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-glyph"><i class="fa-solid fa-feather"></i></div>
+      <div class="feature-eyebrow">Bundle</div>
+      <h3>Light enough to forget.</h3>
+      <p>Under 5KB gzipped, no runtime dependencies, and no framework assumptions.</p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-glyph"><i class="fa-solid fa-layer-group"></i></div>
+      <div class="feature-eyebrow">Toasts</div>
+      <h3>Non-blocking by default.</h3>
+      <p>Stacked toast notifications stay out of the user's way and auto-dismiss cleanly.</p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-glyph"><i class="fa-solid fa-wand-magic-sparkles"></i></div>
+      <div class="feature-eyebrow">UI</div>
+      <h3>Glass, but controlled.</h3>
+      <p>Frosted surfaces, animated SVG icons, and shadows tuned for real product screens.</p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-glyph"><i class="fa-solid fa-universal-access"></i></div>
+      <div class="feature-eyebrow">Access</div>
+      <h3>Keyboard-aware.</h3>
+      <p>ARIA attributes, focus management, and keyboard navigation are included.</p>
+    </article>
+
+    <article class="feature-card">
+      <div class="feature-glyph"><i class="fa-solid fa-sliders"></i></div>
+      <div class="feature-eyebrow">Themes</div>
+      <h3>Brand it in CSS.</h3>
+      <p>Custom properties and optional CSS themes make the component easy to adapt.</p>
+    </article>
   </div>
 </section>
 
 <section id="demo">
   <div class="section-header">
-    <h2>Interactive Demo</h2>
-    <p>Click any button below to see Crystal Alert in action.</p>
+    <h2>Try the interaction lab.</h2>
+    <p>Every button below calls the same public API your app will use.</p>
   </div>
   <div class="demo-container">
-    <h4 style="margin: 0 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Basic Alerts</h4>
-    <div class="demo-grid">
-      <button class="demo-btn success" onclick="Crystal.fire({title:'Success!',text:'Your changes have been saved.',icon:'success'})">
-        <i class="fa-solid fa-circle-check"></i>
-        Success Alert
-      </button>
-      <button class="demo-btn error" onclick="Crystal.fire({title:'Error',text:'Something went wrong. Please try again.',icon:'error'})">
-        <i class="fa-solid fa-circle-xmark"></i>
-        Error Alert
-      </button>
-      <button class="demo-btn warning" onclick="Crystal.fire({title:'Warning',text:'This action may have consequences.',icon:'warning'})">
-        <i class="fa-solid fa-triangle-exclamation"></i>
-        Warning Alert
-      </button>
-      <button class="demo-btn info" onclick="Crystal.fire({title:'Information',text:'Here is some useful information.',icon:'info'})">
-        <i class="fa-solid fa-circle-info"></i>
-        Info Alert
-      </button>
-      <button class="demo-btn confirm" onclick="confirmDemo()">
-        <i class="fa-solid fa-question"></i>
-        Confirmation
-      </button>
-      <button class="demo-btn toast" onclick="toastDemo()">
-        <i class="fa-solid fa-bell"></i>
-        Toast Notification
-      </button>
-    </div>
+    <aside class="demo-aside">
+      <div class="feature-eyebrow">Live playground</div>
+      <h3>Click a scenario. Watch the library do the polite work.</h3>
+      <p>Modal dialogs, toast stacking, async confirmations, custom content, timers, and themes are wired to the real Crystal object on this page.</p>
+      <div class="demo-mini-card">Crystal.toast({<br>&nbsp;&nbsp;title: 'New message',<br>&nbsp;&nbsp;position: 'top-right'<br>})</div>
+    </aside>
 
-    <h4 style="margin: 2rem 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Advanced Features</h4>
-    <div class="demo-grid">
-      <button class="demo-btn" onclick="htmlContentDemo()" style="border-color: #8b5cf6;">
-        <i class="fa-solid fa-code" style="color: #8b5cf6;"></i>
-        HTML Content
-      </button>
-      <button class="demo-btn" onclick="customIconDemo()" style="border-color: #ec4899;">
-        <i class="fa-solid fa-star" style="color: #ec4899;"></i>
-        Custom Icon
-      </button>
-      <button class="demo-btn" onclick="asyncDemo()" style="border-color: #10b981;">
-        <i class="fa-solid fa-spinner" style="color: #10b981;"></i>
-        Async Confirm
-      </button>
-      <button class="demo-btn" onclick="timerDemo()" style="border-color: #ef4444;">
-        <i class="fa-solid fa-clock" style="color: #ef4444;"></i>
-        Auto-close Timer
-      </button>
-      <button class="demo-btn" onclick="toastPositionDemo()" style="border-color: #f59e0b;">
-        <i class="fa-solid fa-arrows-up-down-left-right" style="color: #f59e0b;"></i>
-        Toast Positions
-      </button>
-    </div>
+    <div class="demo-panel">
+      <div class="demo-group">
+        <h4 class="demo-group-title">Basic alerts</h4>
+        <div class="demo-grid">
+          <button class="demo-btn success" onclick="Crystal.fire({title:'Success!',text:'Your changes have been saved.',icon:'success'})">
+            <i class="fa-solid fa-circle-check"></i>
+            Success Alert
+          </button>
+          <button class="demo-btn error" onclick="Crystal.fire({title:'Error',text:'Something went wrong. Please try again.',icon:'error'})">
+            <i class="fa-solid fa-circle-xmark"></i>
+            Error Alert
+          </button>
+          <button class="demo-btn warning" onclick="Crystal.fire({title:'Warning',text:'This action may have consequences.',icon:'warning'})">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+            Warning Alert
+          </button>
+          <button class="demo-btn info" onclick="Crystal.fire({title:'Information',text:'Here is some useful information.',icon:'info'})">
+            <i class="fa-solid fa-circle-info"></i>
+            Info Alert
+          </button>
+          <button class="demo-btn confirm" onclick="confirmDemo()">
+            <i class="fa-solid fa-question"></i>
+            Confirmation
+          </button>
+          <button class="demo-btn toast" onclick="toastDemo()">
+            <i class="fa-solid fa-bell"></i>
+            Toast Notification
+          </button>
+        </div>
+      </div>
 
-    <h4 style="margin: 2rem 0 1rem; color: var(--muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.05em;">Themes (CSS-based)</h4>
-    <div class="demo-grid" style="grid-template-columns: repeat(3, 1fr);">
-      <button class="demo-btn" onclick="switchTheme('default')">
-        <i class="fa-solid fa-sun" style="color: #fbbf24;"></i>
-        Default (Glass)
-      </button>
-      <button class="demo-btn" onclick="switchTheme('dark')">
-        <i class="fa-solid fa-moon" style="color: #6366f1;"></i>
-        Dark
-      </button>
-      <button class="demo-btn" onclick="switchTheme('minimal')">
-        <i class="fa-solid fa-minus" style="color: #111;"></i>
-        Minimal
-      </button>
+      <div class="demo-group">
+        <h4 class="demo-group-title">Advanced features</h4>
+        <div class="demo-grid">
+          <button class="demo-btn accent-purple" onclick="htmlContentDemo()">
+            <i class="fa-solid fa-code"></i>
+            HTML Content
+          </button>
+          <button class="demo-btn accent-pink" onclick="customIconDemo()">
+            <i class="fa-solid fa-star"></i>
+            Custom Icon
+          </button>
+          <button class="demo-btn accent-green" onclick="asyncDemo()">
+            <i class="fa-solid fa-spinner"></i>
+            Async Confirm
+          </button>
+          <button class="demo-btn accent-red" onclick="timerDemo()">
+            <i class="fa-solid fa-clock"></i>
+            Auto-close Timer
+          </button>
+          <button class="demo-btn accent-amber" onclick="toastPositionDemo()">
+            <i class="fa-solid fa-arrows-up-down-left-right"></i>
+            Toast Positions
+          </button>
+        </div>
+      </div>
+
+      <div class="demo-group">
+        <h4 class="demo-group-title">Themes (CSS-based)</h4>
+        <div class="demo-grid theme-grid">
+          <button class="demo-btn theme-default" onclick="switchTheme('default')">
+            <i class="fa-solid fa-sun"></i>
+            Default Glass
+          </button>
+          <button class="demo-btn theme-dark" onclick="switchTheme('dark')">
+            <i class="fa-solid fa-moon"></i>
+            Dark
+          </button>
+          <button class="demo-btn theme-minimal" onclick="switchTheme('minimal')">
+            <i class="fa-solid fa-minus"></i>
+            Minimal
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </section>
 
 <section id="install">
   <div class="section-header">
-    <h2>Quick Installation</h2>
-    <p>Get started in under a minute.</p>
+    <h2>Install it like a utility, not a framework.</h2>
+    <p>Drop in the CDN build or copy the dist files. No bundler required.</p>
   </div>
   <div class="install-wrapper">
     <div class="install-tabs">
@@ -939,7 +1705,7 @@
   <span class="attr">href</span>=<span class="string">"https://cdn.jsdelivr.net/gh/4DRIAN0RTIZ/CrystalAlert@v1.0.0/dist/themes/dark.min.css"</span><span class="tag">&gt;</span></pre>
       </div>
     </div>
-    <div class="code-block" id="download-code" style="display:none;">
+    <div class="code-block is-hidden" id="download-code">
       <div class="code-header">
         <div class="code-dots">
           <span></span><span></span><span></span>
@@ -965,8 +1731,8 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
 
 <section id="api">
   <div class="section-header">
-    <h2>API Reference</h2>
-    <p>Simple methods for all your notification needs.</p>
+    <h2>Three methods, no ceremony.</h2>
+    <p>The public API stays compact so your product code remains readable.</p>
   </div>
   <div class="api-grid">
     <div class="api-card">
@@ -1061,12 +1827,12 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
             <span class="api-param-desc">Promise that resolves when loaded</span>
           </li>
         </ul>
-        <div style="margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.03); border-radius: 8px; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; text-align: left;">
-          <span style="color: #6272a4;">// Load dark theme</span><br>
-          <span style="color: #6366f1;">await Crystal</span>.<span style="color: #059669;">setTheme</span>(<span style="color: #d97706;">'dark'</span>);<br><br>
-          <span style="color: #6272a4;">// Custom theme path</span><br>
-          <span style="color: #6366f1;">Crystal</span>.<span style="color: #059669;">setThemePath</span>(<span style="color: #d97706;">'/css/themes/'</span>);<br>
-          <span style="color: #6366f1;">await Crystal</span>.<span style="color: #059669;">setTheme</span>(<span style="color: #d97706;">'brand'</span>);
+        <div class="theme-snippet">
+          <span class="token-comment">// Load dark theme</span><br>
+          <span class="token-object">await Crystal</span>.<span class="token-method">setTheme</span>(<span class="token-string">'dark'</span>);<br><br>
+          <span class="token-comment">// Custom theme path</span><br>
+          <span class="token-object">Crystal</span>.<span class="token-method">setThemePath</span>(<span class="token-string">'/css/themes/'</span>);<br>
+          <span class="token-object">await Crystal</span>.<span class="token-method">setTheme</span>(<span class="token-string">'brand'</span>);
         </div>
       </div>
     </div>
@@ -1116,8 +1882,23 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
 <script>
   // Nav scroll effect
   const navbar = document.getElementById('navbar');
+  const navToggle = document.querySelector('.nav-toggle');
+  const navLinks = document.querySelector('.nav-links');
+
   window.addEventListener('scroll', () => {
     navbar.classList.toggle('scrolled', window.scrollY > 20);
+  });
+
+  navToggle.addEventListener('click', () => {
+    const isOpen = navLinks.classList.toggle('open');
+    navToggle.setAttribute('aria-expanded', String(isOpen));
+  });
+
+  navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+      navLinks.classList.remove('open');
+      navToggle.setAttribute('aria-expanded', 'false');
+    });
   });
 
   // Theme switcher
@@ -1172,8 +1953,8 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
       title: 'Subscribe to Newsletter',
       html: `
         <div class="ca-html-content">
-          <input type="email" id="email-input" placeholder="Enter your email" style="margin-bottom: 0.75rem;">
-          <select style="margin-bottom: 0;">
+          <input type="email" id="email-input" placeholder="Enter your email">
+          <select>
             <option>Daily digest</option>
             <option>Weekly summary</option>
             <option>Monthly updates</option>
@@ -1197,7 +1978,7 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
     Crystal.fire({
       title: 'Custom Icon',
       text: 'You can use any HTML as an icon: Font Awesome, images, SVGs, or even emojis.',
-      iconHtml: '<i class="fa-solid fa-rocket" style="font-size: 2rem; color: #ec4899;"></i>'
+      iconHtml: '<i class="fa-solid fa-rocket custom-rocket-icon"></i>'
     });
   }
 
