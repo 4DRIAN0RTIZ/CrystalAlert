@@ -1,5 +1,7 @@
 node_modules/
-index.html
+website/
+progress/
+docs/
 *.lock
 .gitignore
 .DS_Store
