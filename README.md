@@ -153,9 +153,9 @@ Crystal.setTheme('default'); // Reset to default
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `title` | String | 'Alert' | Main alert title. |
-| `text` | String | '' | Descriptive text or message body. |
-| `html` | String | '' | HTML content (overrides text). |
+| `title` | String | 'Alert' | Main alert title, rendered as **plain text** (not parsed as HTML). |
+| `text` | String | '' | Message body, rendered as **plain text** (not parsed as HTML). |
+| `html` | String | '' | Trusted HTML content, rendered as markup (overrides `text`). |
 | `icon` | String | '' | Icon type: `success`, `error`, `warning`, `info`. |
 | `iconHtml` | String | '' | Custom icon HTML (overrides icon). |
 | `confirmButtonText` | String | 'OK' | Confirm button text. |
@@ -170,11 +170,21 @@ Crystal.setTheme('default'); // Reset to default
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `title` | String | '' | Toast title. |
-| `text` | String | '' | Toast message. |
-| `icon` | String | 'info' | Icon type. |
+| `title` | String | '' | Toast title, rendered as **plain text** (not parsed as HTML). |
+| `text` | String | '' | Toast message, rendered as **plain text** (not parsed as HTML). |
+| `html` | String | '' | Trusted HTML content, rendered as markup (overrides `text`). |
+| `icon` | String | 'info' | Icon type: `success`, `error`, `warning`, `info`. |
+| `iconHtml` | String | '' | Custom icon HTML, rendered as markup (overrides `icon`). |
 | `duration` | Number | 3000 | Auto-dismiss in ms (0 = persistent). |
 | `position` | String | 'top-right' | Position: `top-right`, `top-left`, `bottom-right`, `bottom-left`. |
+
+### Security: `text` vs `html`
+
+`title` and `text` are always inserted via `textContent`, so any markup in them
+(for example `<img src=x onerror=...>`) shows up as literal characters and never
+runs. Use them for anything that comes from users or other untrusted input.
+`html` and `iconHtml` are the explicit opt-in for trusted markup and are
+inserted as-is; never pass unsanitized user input to them.
 
 ## File Sizes
 
