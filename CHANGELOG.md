@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Bug Fixes
+
+- Adjust netlify.toml for the website base directory ([20bfe4a](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/20bfe4a6936dc21ed4c6a8d358b410dd41ce737d))
+
 ## [1.1.2] - 2026-09-07
 
 ### Bug Fixes
