@@ -1,6 +1,8 @@
-# Netlify builds the marketing site from website/. The library source lives in
-# src/ (outside the publish directory), so relative paths like ../src/ cannot be
-# served. Copy the files the page needs into website/vendor/ before publishing.
+# The Netlify site config sets the base directory to website/, so the build
+# runs from there and the publish directory is website/ itself. The library
+# source lives one level up in src/ (outside the publish directory), so copy
+# the files the page needs into website/vendor/ before publishing.
 [build]
-  command = "rm -rf website/vendor && mkdir -p website/vendor/themes && cp src/crystal-alert.js src/crystal-alert-styles.css website/vendor/ && cp src/themes/crystal-alert-dark.css src/themes/crystal-alert-minimal.css website/vendor/themes/"
-  publish = "website"
+  base = "website"
+  publish = "."
+  command = "rm -rf vendor && mkdir -p vendor/themes && cp ../src/crystal-alert.js ../src/crystal-alert-styles.css vendor/ && cp ../src/themes/crystal-alert-dark.css ../src/themes/crystal-alert-minimal.css vendor/themes/"
