@@ -173,7 +173,8 @@ Crystal.setTheme('default'); // Reset to default
 | `title` | String | '' | Toast title, rendered as **plain text** (not parsed as HTML). |
 | `text` | String | '' | Toast message, rendered as **plain text** (not parsed as HTML). |
 | `html` | String | '' | Trusted HTML content, rendered as markup (overrides `text`). |
-| `icon` | String | 'info' | Icon type. |
+| `icon` | String | 'info' | Icon type: `success`, `error`, `warning`, `info`. |
+| `iconHtml` | String | '' | Custom icon HTML, rendered as markup (overrides `icon`). |
 | `duration` | Number | 3000 | Auto-dismiss in ms (0 = persistent). |
 | `position` | String | 'top-right' | Position: `top-right`, `top-left`, `bottom-right`, `bottom-left`. |
 

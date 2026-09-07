@@ -11,12 +11,19 @@ class CrystalAlert {
     this.currentTheme = 'default';
     this.themeStylesheet = null;
     this.themePath = 'themes/';
-
-    this.init();
+    this.toastPosition = null;
   }
 
-  init() {
-    if (!document.querySelector('.ca-overlay')) {
+  // Builds the DOM lazily on the first fire()/toast(). Doing it in the
+  // constructor breaks when the script loads in <head>, where document.body
+  // is still null at import time.
+  ensureDom() {
+    if (this.overlay && this.toastContainer) return;
+
+    this.overlay = document.querySelector('.ca-overlay');
+    if (this.overlay) {
+      this.modal = this.overlay.querySelector('.ca-modal');
+    } else {
       this.overlay = document.createElement('div');
       this.overlay.className = 'ca-overlay';
 
@@ -35,7 +42,8 @@ class CrystalAlert {
       });
     }
 
-    if (!document.querySelector('.ca-toast-container')) {
+    this.toastContainer = document.querySelector('.ca-toast-container');
+    if (!this.toastContainer) {
       this.toastContainer = document.createElement('div');
       this.toastContainer.className = 'ca-toast-container';
       document.body.appendChild(this.toastContainer);
@@ -57,11 +65,13 @@ class CrystalAlert {
    */
   setTheme(name) {
     return new Promise((resolve, reject) => {
-      // Remove current theme stylesheet if exists
-      if (this.themeStylesheet) {
-        this.themeStylesheet.remove();
-        this.themeStylesheet = null;
-      }
+      // Remove any existing theme stylesheet, including one from a previous
+      // setTheme() call whose onload has not fired yet (avoids duplicate
+      // <link id="ca-theme-stylesheet"> on rapid successive calls).
+      if (this.themeStylesheet) this.themeStylesheet.remove();
+      const stale = document.getElementById('ca-theme-stylesheet');
+      if (stale) stale.remove();
+      this.themeStylesheet = null;
 
       // Default theme uses base styles, no additional CSS needed
       if (name === 'default' || name === 'light') {
@@ -75,10 +85,10 @@ class CrystalAlert {
       link.rel = 'stylesheet';
       link.href = `${this.themePath}crystal-alert-${name}.css`;
       link.id = 'ca-theme-stylesheet';
+      this.themeStylesheet = link;
 
       link.onload = () => {
         this.currentTheme = name;
-        this.themeStylesheet = link;
         resolve();
       };
 
@@ -130,6 +140,7 @@ class CrystalAlert {
     onClose = null
   } = {}) {
     return new Promise((resolve) => {
+      this.ensureDom();
       this.activeElement = document.activeElement;
       this.resolvePromise = resolve;
       this.onCloseCallback = onClose;
@@ -234,8 +245,10 @@ class CrystalAlert {
 
   close(result) {
     document.removeEventListener('keydown', this._escHandler);
-    this.overlay.classList.remove('ca-show');
+    if (this.overlay) this.overlay.classList.remove('ca-show');
 
+    // Must match the .ca-modal exit transition (transform 0.4s) in
+    // crystal-alert-styles.css so focus/promise settle after it finishes.
     setTimeout(() => {
       if (this.onCloseCallback && typeof this.onCloseCallback === 'function') {
         this.onCloseCallback(result);
@@ -248,7 +261,7 @@ class CrystalAlert {
         this.activeElement.focus();
         this.activeElement = null;
       }
-    }, 300);
+    }, 400);
   }
 
   /**
@@ -271,8 +284,14 @@ class CrystalAlert {
     duration = 3000,
     position = 'top-right'
   } = {}) {
-    // Update container position
-    this.toastContainer.className = `ca-toast-container ca-${position}`;
+    this.ensureDom();
+
+    // Only touch the container class when the position actually changes,
+    // otherwise every call reflows the container and visible toasts jump.
+    if (this.toastPosition !== position) {
+      this.toastContainer.className = `ca-toast-container ca-${position}`;
+      this.toastPosition = position;
+    }
 
     const toastEl = document.createElement('div');
     toastEl.className = 'ca-toast';
