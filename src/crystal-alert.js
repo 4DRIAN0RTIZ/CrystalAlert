@@ -142,8 +142,8 @@ class CrystalAlert {
         iconMarkup = `<div class="ca-icon ${icon}">${this.getIconSVG(icon)}</div>`;
       }
 
-      // Content: html takes priority over text
-      const content = html || (text ? `<p class="ca-text">${text}</p>` : '');
+      // Content: html takes priority over text; text goes in via textContent (see below)
+      const content = html || (text ? '<p class="ca-text"></p>' : '');
 
       // Close button
       const closeBtn = showCloseButton
@@ -168,12 +168,19 @@ class CrystalAlert {
       this.modal.innerHTML = `
         ${closeBtn}
         ${iconMarkup}
-        <h2 class="ca-title">${title}</h2>
+        <h2 class="ca-title"></h2>
         ${content}
         <div class="ca-actions">
           ${buttonsHtml}
         </div>
       `;
+
+      this.modal.querySelector('.ca-title').textContent = title;
+
+      if (!html && text) {
+        const textEl = this.modal.querySelector('.ca-text');
+        if (textEl) textEl.textContent = text;
+      }
 
       const confirmBtn = this.modal.querySelector('.ca-btn-confirm');
       const cancelBtn = this.modal.querySelector('.ca-btn-cancel');
@@ -283,8 +290,8 @@ class CrystalAlert {
       ? `<div class="ca-toast-icon">${iconHtml}</div>`
       : `<div class="ca-toast-icon" style="color: ${iconColor}">${this.getIconSVG(icon)}</div>`;
 
-    // Content
-    const content = html || (text ? `<p class="ca-toast-text">${text}</p>` : '');
+    // Content: html takes priority over text; text goes in via textContent (see below)
+    const content = html || (text ? '<p class="ca-toast-text"></p>' : '');
 
     // Progress bar only if duration > 0
     const progressBar = duration > 0
@@ -294,11 +301,18 @@ class CrystalAlert {
     toastEl.innerHTML = `
       ${iconMarkup}
       <div class="ca-toast-content">
-        <h3 class="ca-toast-title">${title}</h3>
+        <h3 class="ca-toast-title"></h3>
         ${content}
       </div>
       ${progressBar}
     `;
+
+    toastEl.querySelector('.ca-toast-title').textContent = title;
+
+    if (!html && text) {
+      const textEl = toastEl.querySelector('.ca-toast-text');
+      if (textEl) textEl.textContent = text;
+    }
 
     this.toastContainer.appendChild(toastEl);
 
