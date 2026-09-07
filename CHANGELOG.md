@@ -2,11 +2,15 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.1] - 2026-09-07
 
 ### Bug Fixes
 
 - Pin auto-install-peers to match the lockfile ([2af09b7](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/2af09b7fb60d184c10906e1be3ab8947e9165ae7))
+
+### Chore
+
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([d51f980](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/d51f980077c5f34d9baf50fee5b2d679978f0e4b))
 
 ## [1.1.0] - 2026-09-07
 
