@@ -2,11 +2,15 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.2] - 2026-09-07
 
 ### Bug Fixes
 
 - Serve the demo assets from the publish directory ([114b086](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/114b086e96fed55bd0a8e93b9c31e4b384daca81))
+
+### Chore
+
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([caf12b1](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/caf12b16aa3c621d582c5df0aead40c5b014e016))
 
 ## [1.1.1] - 2026-09-07
 
