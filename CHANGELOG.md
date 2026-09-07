@@ -2,7 +2,7 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.0] - 2026-09-07
 
 ### Bug Fixes
 
@@ -11,6 +11,10 @@ All notable changes to this project are documented here.
 ### CI
 
 - Automate changelog and releases ([48e2ddd](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/48e2ddd354d614275743ea052f6c370284d42a12))
+
+### Chore
+
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([ceb1431](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ceb1431354287a75d3e8f00e2e698122238d9fb7))
 
 ### Features
 
