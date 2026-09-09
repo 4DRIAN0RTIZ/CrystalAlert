@@ -2,12 +2,16 @@
 
 All notable changes to this project are documented here.
 
-## [Unreleased]
+## [1.1.4] - 2026-09-09
 
 ### Bug Fixes
 
 - Batch of small defects in modal and toast lifecycle ([add75c4](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/add75c4063ae1d59111f5e5b455e2714ff1262dc))
 - Render title and text as plain text to prevent XSS ([ddb88c8](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ddb88c8725a4071aa96eef9aa15ec87a432a2e40))
+
+### Chore
+
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([38059cb](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/38059cbdb2f5a650a9513e72435250950ee24905))
 
 ## [1.1.3] - 2026-09-07
 
