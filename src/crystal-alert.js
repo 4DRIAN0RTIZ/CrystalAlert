@@ -11,12 +11,19 @@ class CrystalAlert {
     this.currentTheme = 'default';
     this.themeStylesheet = null;
     this.themePath = 'themes/';
-
-    this.init();
+    this.toastPosition = null;
   }
 
-  init() {
-    if (!document.querySelector('.ca-overlay')) {
+  // Builds the DOM lazily on the first fire()/toast(). Doing it in the
+  // constructor breaks when the script loads in <head>, where document.body
+  // is still null at import time.
+  ensureDom() {
+    if (this.overlay && this.toastContainer) return;
+
+    this.overlay = document.querySelector('.ca-overlay');
+    if (this.overlay) {
+      this.modal = this.overlay.querySelector('.ca-modal');
+    } else {
       this.overlay = document.createElement('div');
       this.overlay.className = 'ca-overlay';
 
@@ -35,7 +42,8 @@ class CrystalAlert {
       });
     }
 
-    if (!document.querySelector('.ca-toast-container')) {
+    this.toastContainer = document.querySelector('.ca-toast-container');
+    if (!this.toastContainer) {
       this.toastContainer = document.createElement('div');
       this.toastContainer.className = 'ca-toast-container';
       document.body.appendChild(this.toastContainer);
@@ -57,11 +65,13 @@ class CrystalAlert {
    */
   setTheme(name) {
     return new Promise((resolve, reject) => {
-      // Remove current theme stylesheet if exists
-      if (this.themeStylesheet) {
-        this.themeStylesheet.remove();
-        this.themeStylesheet = null;
-      }
+      // Remove any existing theme stylesheet, including one from a previous
+      // setTheme() call whose onload has not fired yet (avoids duplicate
+      // <link id="ca-theme-stylesheet"> on rapid successive calls).
+      if (this.themeStylesheet) this.themeStylesheet.remove();
+      const stale = document.getElementById('ca-theme-stylesheet');
+      if (stale) stale.remove();
+      this.themeStylesheet = null;
 
       // Default theme uses base styles, no additional CSS needed
       if (name === 'default' || name === 'light') {
@@ -75,10 +85,10 @@ class CrystalAlert {
       link.rel = 'stylesheet';
       link.href = `${this.themePath}crystal-alert-${name}.css`;
       link.id = 'ca-theme-stylesheet';
+      this.themeStylesheet = link;
 
       link.onload = () => {
         this.currentTheme = name;
-        this.themeStylesheet = link;
         resolve();
       };
 
@@ -130,6 +140,7 @@ class CrystalAlert {
     onClose = null
   } = {}) {
     return new Promise((resolve) => {
+      this.ensureDom();
       this.activeElement = document.activeElement;
       this.resolvePromise = resolve;
       this.onCloseCallback = onClose;
@@ -142,8 +153,8 @@ class CrystalAlert {
         iconMarkup = `<div class="ca-icon ${icon}">${this.getIconSVG(icon)}</div>`;
       }
 
-      // Content: html takes priority over text
-      const content = html || (text ? `<p class="ca-text">${text}</p>` : '');
+      // Content: html takes priority over text; text goes in via textContent (see below)
+      const content = html || (text ? '<p class="ca-text"></p>' : '');
 
       // Close button
       const closeBtn = showCloseButton
@@ -168,12 +179,19 @@ class CrystalAlert {
       this.modal.innerHTML = `
         ${closeBtn}
         ${iconMarkup}
-        <h2 class="ca-title">${title}</h2>
+        <h2 class="ca-title"></h2>
         ${content}
         <div class="ca-actions">
           ${buttonsHtml}
         </div>
       `;
+
+      this.modal.querySelector('.ca-title').textContent = title;
+
+      if (!html && text) {
+        const textEl = this.modal.querySelector('.ca-text');
+        if (textEl) textEl.textContent = text;
+      }
 
       const confirmBtn = this.modal.querySelector('.ca-btn-confirm');
       const cancelBtn = this.modal.querySelector('.ca-btn-cancel');
@@ -227,8 +245,10 @@ class CrystalAlert {
 
   close(result) {
     document.removeEventListener('keydown', this._escHandler);
-    this.overlay.classList.remove('ca-show');
+    if (this.overlay) this.overlay.classList.remove('ca-show');
 
+    // Must match the .ca-modal exit transition (transform 0.4s) in
+    // crystal-alert-styles.css so focus/promise settle after it finishes.
     setTimeout(() => {
       if (this.onCloseCallback && typeof this.onCloseCallback === 'function') {
         this.onCloseCallback(result);
@@ -241,7 +261,7 @@ class CrystalAlert {
         this.activeElement.focus();
         this.activeElement = null;
       }
-    }, 300);
+    }, 400);
   }
 
   /**
@@ -264,8 +284,14 @@ class CrystalAlert {
     duration = 3000,
     position = 'top-right'
   } = {}) {
-    // Update container position
-    this.toastContainer.className = `ca-toast-container ca-${position}`;
+    this.ensureDom();
+
+    // Only touch the container class when the position actually changes,
+    // otherwise every call reflows the container and visible toasts jump.
+    if (this.toastPosition !== position) {
+      this.toastContainer.className = `ca-toast-container ca-${position}`;
+      this.toastPosition = position;
+    }
 
     const toastEl = document.createElement('div');
     toastEl.className = 'ca-toast';
@@ -283,8 +309,8 @@ class CrystalAlert {
       ? `<div class="ca-toast-icon">${iconHtml}</div>`
       : `<div class="ca-toast-icon" style="color: ${iconColor}">${this.getIconSVG(icon)}</div>`;
 
-    // Content
-    const content = html || (text ? `<p class="ca-toast-text">${text}</p>` : '');
+    // Content: html takes priority over text; text goes in via textContent (see below)
+    const content = html || (text ? '<p class="ca-toast-text"></p>' : '');
 
     // Progress bar only if duration > 0
     const progressBar = duration > 0
@@ -294,11 +320,18 @@ class CrystalAlert {
     toastEl.innerHTML = `
       ${iconMarkup}
       <div class="ca-toast-content">
-        <h3 class="ca-toast-title">${title}</h3>
+        <h3 class="ca-toast-title"></h3>
         ${content}
       </div>
       ${progressBar}
     `;
+
+    toastEl.querySelector('.ca-toast-title').textContent = title;
+
+    if (!html && text) {
+      const textEl = toastEl.querySelector('.ca-toast-text');
+      if (textEl) textEl.textContent = text;
+    }
 
     this.toastContainer.appendChild(toastEl);
 
