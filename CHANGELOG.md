@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.6] - 2026-09-17
+
+### Bug Fixes
+
+- Drop pipe-encoded milestone from issue title ([1c5d8c6](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/1c5d8c6cbe5eb4598812055c69ce84d9ed321c0d))
+
 ## [1.1.5] - 2026-09-17
 
 ### Bug Fixes
