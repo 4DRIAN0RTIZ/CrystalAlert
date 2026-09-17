@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [1.1.5] - 2026-09-17
+
+### Bug Fixes
+
+- Complete issue template and prefix title with [roadmap] ([3f2d9b0](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/3f2d9b02784155c66b685e1d3d6c04bc75abe6f4))
+
 ## [1.1.4] - 2026-09-09
 
 ### Bug Fixes
