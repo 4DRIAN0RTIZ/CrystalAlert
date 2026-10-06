@@ -6,6 +6,7 @@ All notable changes to this project are documented here.
 
 ### Bug Fixes
 
+- Exclude automated changelog commits ([3ba7748](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/3ba774871ade43d2425831586e958632c74fa311))
 - Return timer dismissal reason ([76ba064](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/76ba064f5519ef5ac43e8ec195c74c8e3073f780))
 
 ### Features
