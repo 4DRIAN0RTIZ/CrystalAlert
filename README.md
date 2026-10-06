@@ -91,6 +91,21 @@ Crystal.fire({
 });
 ```
 
+### Timed Modals
+
+Set `timer` in milliseconds to close a modal automatically. Add
+`timerProgressBar: true` to show the remaining time at the bottom of the modal.
+A manual confirmation or dismissal cancels the timer.
+
+```javascript
+Crystal.fire({
+    title: 'Session expiring',
+    text: 'This dialog will close in five seconds.',
+    timer: 5000,
+    timerProgressBar: true
+});
+```
+
 ### Smart Async
 
 Pass a function that returns a Promise to `preConfirm`. The button will show a spinner automatically and remain disabled until the promise resolves.
@@ -196,6 +211,8 @@ Crystal.setTheme('default'); // Reset to default
 | `inputValue` | String/Boolean | '' | Initial value for the generated input. |
 | `inputOptions` | Array | [] | Options for a `select`, as strings or `{ value, label }` objects. |
 | `inputValidator` | Function | null | Async or sync validator; return a string to keep the modal open and show an error. |
+| `timer` | Number | 0 | Auto-close duration in milliseconds. |
+| `timerProgressBar` | Boolean | false | Show a progress bar for the modal timer. |
 | `confirmButtonText` | String | 'OK' | Confirm button text. |
 | `showCancelButton` | Boolean | false | Show cancel button. |
 | `cancelButtonText` | String | 'Cancel' | Cancel button text. |
