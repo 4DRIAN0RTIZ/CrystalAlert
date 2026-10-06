@@ -112,6 +112,39 @@ Crystal.fire({
 });
 ```
 
+### Inputs and Prompts
+
+Use `input` to collect a value without building custom HTML. The supported
+input types are `text`, `email`, `password`, `number`, `textarea`, `select`,
+and `checkbox`.
+
+```javascript
+Crystal.prompt('Subscribe to the newsletter', {
+    input: 'email',
+    inputPlaceholder: 'you@example.com',
+    inputValidator: (email) => email.includes('@') ? '' : 'Enter a valid email.'
+}).then((email) => {
+    if (email) console.log(`Subscribed: ${email}`);
+});
+```
+
+For a select, pass `inputOptions` as strings or `{ value, label }` objects.
+`preConfirm` receives the input value and can return a transformed value or a
+Promise. Validation messages can also be shown from callbacks with
+`Crystal.showValidationMessage(message)`.
+
+```javascript
+Crystal.fire({
+    title: 'Delivery frequency',
+    input: 'select',
+    inputOptions: [
+        { value: 'daily', label: 'Daily digest' },
+        { value: 'weekly', label: 'Weekly summary' }
+    ],
+    inputValue: 'daily'
+});
+```
+
 ### Toasts (Notifications)
 
 Display floating notifications that stack automatically.
@@ -158,6 +191,11 @@ Crystal.setTheme('default'); // Reset to default
 | `html` | String | '' | Trusted HTML content, rendered as markup (overrides `text`). |
 | `icon` | String | '' | Icon type: `success`, `error`, `warning`, `info`. |
 | `iconHtml` | String | '' | Custom icon HTML (overrides icon). |
+| `input` | String | null | Input type: `text`, `email`, `password`, `number`, `textarea`, `select`, or `checkbox`. |
+| `inputPlaceholder` | String | '' | Placeholder for the generated input. |
+| `inputValue` | String/Boolean | '' | Initial value for the generated input. |
+| `inputOptions` | Array | [] | Options for a `select`, as strings or `{ value, label }` objects. |
+| `inputValidator` | Function | null | Async or sync validator; return a string to keep the modal open and show an error. |
 | `confirmButtonText` | String | 'OK' | Confirm button text. |
 | `showCancelButton` | Boolean | false | Show cancel button. |
 | `cancelButtonText` | String | 'Cancel' | Cancel button text. |

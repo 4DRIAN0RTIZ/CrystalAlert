@@ -1630,8 +1630,8 @@
         <h4 class="demo-group-title">Advanced features</h4>
         <div class="demo-grid">
           <button class="demo-btn accent-purple" onclick="htmlContentDemo()">
-            <i class="fa-solid fa-code"></i>
-            HTML Content
+            <i class="fa-solid fa-keyboard"></i>
+            Input Prompt
           </button>
           <button class="demo-btn accent-pink" onclick="customIconDemo()">
             <i class="fa-solid fa-star"></i>
@@ -1955,24 +1955,12 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
   }
 
   function htmlContentDemo() {
-    Crystal.fire({
-      title: 'Subscribe to Newsletter',
-      html: `
-        <div class="ca-html-content">
-          <input type="email" id="email-input" placeholder="Enter your email">
-          <select>
-            <option>Daily digest</option>
-            <option>Weekly summary</option>
-            <option>Monthly updates</option>
-          </select>
-        </div>
-      `,
+    Crystal.prompt('Subscribe to Newsletter', {
+      input: 'email',
+      inputPlaceholder: 'Enter your email',
+      inputValidator: (email) => email.includes('@') ? '' : 'Enter a valid email address.',
       showCancelButton: true,
-      confirmButtonText: 'Subscribe',
-      preConfirm: () => {
-        const email = document.getElementById('email-input').value;
-        return email || 'no-email@example.com';
-      }
+      confirmButtonText: 'Subscribe'
     }).then(result => {
       if (result) {
         Crystal.toast({ title: 'Subscribed!', text: `Email: ${result}`, icon: 'success' });
