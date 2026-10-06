@@ -19,10 +19,12 @@ All notable changes to this project are documented here.
 
 ### Documentation
 
+- Align toast lifecycle and comparison references ([fd0ffbf](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/fd0ffbf484ce22baa95600b4ac02a3acafcbb692))
 - Document queued modal behavior ([99a1a82](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/99a1a822188615d231251b9cdd02387f18c93a2d))
 
 ### Features
 
+- Add lifecycle controls and resilient dismissal ([9f06b31](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/9f06b31b4ac88e516a9a1c30064fe26337605018))
 - Add toast handles and lifecycle controls ([1c641dd](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/1c641dd8fd58768323ac52c328b5708173ed0516))
 - Show selected playground snippets ([4bff0cb](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/4bff0cb00b6544ac6aaeeae4d355bef7a105bc1c))
 - Queue concurrent modal dialogs ([4dea497](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/4dea497e3627ae668e1c9fae7924f128b32d652c))
