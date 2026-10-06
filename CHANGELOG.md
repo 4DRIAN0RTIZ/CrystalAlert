@@ -4,8 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Bug Fixes
+
+- Return timer dismissal reason ([76ba064](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/76ba064f5519ef5ac43e8ec195c74c8e3073f780))
+
 ### Chore
 
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([c8095ec](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/c8095eccbc7a8dd6f062ea81f1f85664b33d55a9))
 - Update CHANGELOG.md and docs/changelog.json [skip ci] ([5e92cac](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/5e92cacdaccfe972ffe63d7d3750db8ccbe7d12c))
 
 ### Features
