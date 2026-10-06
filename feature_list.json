@@ -1,0 +1,279 @@
+{
+  "project": "crystal-alert",
+  "description": "Vanilla JavaScript and CSS alerts, confirms, prompts, and toasts with a glassmorphism UI and zero runtime dependencies.",
+  "rules": {
+    "one_feature_at_a_time": true,
+    "require_green_init_to_close": true,
+    "valid_status": ["pending", "in_progress", "done", "blocked"]
+  },
+  "features": [
+    {
+      "id": 1,
+      "name": "safe_text_rendering",
+      "title": "Escape user text to prevent XSS",
+      "description": "Render title and text values as text while keeping html and iconHtml as explicit markup opt-ins.",
+      "acceptance": [
+        "title and text are rendered with textContent.",
+        "html and iconHtml continue to support explicit markup.",
+        "HTML supplied through text is displayed literally and never executed.",
+        "Regression tests cover an XSS payload."
+      ],
+      "issue": 1,
+      "status": "done"
+    },
+    {
+      "id": 2,
+      "name": "small_bug_fixes",
+      "title": "Fix small modal, toast, theme, and DOM bugs",
+      "description": "Resolve the identified timing, CSS variable, toast positioning, theme stylesheet, and import-time DOM issues.",
+      "acceptance": [
+        "Modal close timing matches the CSS transition.",
+        "The backdrop blur CSS variable is applied.",
+        "Visible toasts keep their own position when another toast is created.",
+        "Theme stylesheet replacement does not create duplicate IDs.",
+        "Importing before document.body exists does not throw.",
+        "Regression tests cover the corrected behaviors."
+      ],
+      "issue": 2,
+      "status": "done"
+    },
+    {
+      "id": 3,
+      "name": "input_prompt_api",
+      "title": "Add input support and Crystal.prompt()",
+      "description": "Provide configurable text, numeric, textarea, select, checkbox, and password inputs in modal dialogs.",
+      "acceptance": [
+        "fire supports text, email, password, number, textarea, select, and checkbox inputs.",
+        "Placeholder, initial value, and select options are configurable.",
+        "Async inputValidator can return an inline validation message.",
+        "The submitted input value is available to then and preConfirm.",
+        "Crystal.prompt(title, options) is a convenience API.",
+        "The demo and README document the feature."
+      ],
+      "issue": 3,
+      "status": "done"
+    },
+    {
+      "id": 4,
+      "name": "modal_timer",
+      "title": "Add modal timers and timer progress bars",
+      "description": "Automatically close modal dialogs after a configured duration and optionally show progress.",
+      "acceptance": [
+        "timer closes the modal after the configured duration.",
+        "timerProgressBar renders remaining time without affecting modal content.",
+        "Manual confirmation or dismissal cancels the timer safely.",
+        "The resolved result identifies timer dismissal."
+      ],
+      "issue": 4,
+      "status": "done"
+    },
+    {
+      "id": 5,
+      "name": "modal_queue",
+      "title": "Queue concurrent modal dialogs",
+      "description": "Prevent concurrent fire calls from orphaning the promise belonging to an earlier modal.",
+      "acceptance": [
+        "Multiple fire calls are handled in FIFO order.",
+        "Every fire promise resolves exactly once.",
+        "The active modal is not overwritten by a later call.",
+        "Queue behavior is covered by tests."
+      ],
+      "issue": 5,
+      "status": "pending"
+    },
+    {
+      "id": 6,
+      "name": "toast_handle",
+      "title": "Return a real toast handle",
+      "description": "Expose stable toast lifecycle controls for closing and updating an existing toast.",
+      "acceptance": [
+        "toast returns an object containing id, close, and update.",
+        "close removes only the referenced toast.",
+        "update changes content and supported options in place.",
+        "closeToast and closeAllToasts are available on Crystal.",
+        "Handle behavior is covered by tests."
+      ],
+      "issue": 6,
+      "status": "pending"
+    },
+    {
+      "id": 7,
+      "name": "toast_lifecycle",
+      "title": "Add toast lifecycle controls",
+      "description": "Support hover pausing, optional close buttons, and close callbacks or promise resolution.",
+      "acceptance": [
+        "pauseOnHover pauses and resumes the dismissal timer.",
+        "showCloseButton renders a usable close control.",
+        "onClose runs once for every dismissal path.",
+        "Lifecycle callbacks do not fire after a toast has already closed."
+      ],
+      "issue": 7,
+      "status": "pending"
+    },
+    {
+      "id": 8,
+      "name": "focus_trap",
+      "title": "Trap focus inside modal dialogs",
+      "description": "Keep keyboard focus within the active modal and restore it to the previously focused element.",
+      "acceptance": [
+        "Tab cycles through focusable modal controls.",
+        "Shift+Tab cycles in reverse.",
+        "Focus cannot escape to the page behind the modal.",
+        "Focus is restored after dismissal."
+      ],
+      "issue": 8,
+      "status": "pending"
+    },
+    {
+      "id": 9,
+      "name": "modal_aria_labels",
+      "title": "Add modal ARIA relationships",
+      "description": "Connect modal labels and descriptions using generated IDs and ARIA attributes.",
+      "acceptance": [
+        "The modal has aria-labelledby when a title is present.",
+        "The modal has aria-describedby when descriptive text is present.",
+        "Generated IDs are unique for simultaneous DOM elements.",
+        "Tests verify the resulting relationships."
+      ],
+      "issue": 9,
+      "status": "pending"
+    },
+    {
+      "id": 10,
+      "name": "announced_toasts",
+      "title": "Make toasts accessible to screen readers",
+      "description": "Expose toast notifications through appropriate live-region semantics.",
+      "acceptance": [
+        "Toast containers use status and polite live-region semantics by default.",
+        "Error notifications can use assertive announcements.",
+        "ARIA attributes do not change visual behavior."
+      ],
+      "issue": 10,
+      "status": "pending"
+    },
+    {
+      "id": 11,
+      "name": "reduced_motion",
+      "title": "Respect prefers-reduced-motion",
+      "description": "Disable or reduce modal and toast animations for users who request reduced motion.",
+      "acceptance": [
+        "The library defines a prefers-reduced-motion media query.",
+        "Modal and toast transitions are reduced or disabled under that preference.",
+        "Normal motion remains unchanged."
+      ],
+      "issue": 11,
+      "status": "pending"
+    },
+    {
+      "id": 12,
+      "name": "dismissal_controls",
+      "title": "Configure Escape and outside-click dismissal",
+      "description": "Allow callers to disable dismissal through Escape or backdrop clicks.",
+      "acceptance": [
+        "allowEscapeKey controls Escape dismissal.",
+        "allowOutsideClick controls backdrop dismissal.",
+        "Both options default to the current dismissible behavior.",
+        "Disabled dismissal does not resolve the modal prematurely."
+      ],
+      "issue": 12,
+      "status": "pending"
+    },
+    {
+      "id": 13,
+      "name": "esm_distribution",
+      "title": "Add modern ESM and global distribution",
+      "description": "Provide ESM exports, an explicit browser global, and package export metadata.",
+      "acceptance": [
+        "The package exposes CrystalAlert and Crystal through ESM.",
+        "Script usage exposes window.Crystal without breaking existing usage.",
+        "package.json declares exports and module entry points.",
+        "The generated distribution remains dependency-free."
+      ],
+      "issue": 13,
+      "status": "pending"
+    },
+    {
+      "id": 14,
+      "name": "typescript_types",
+      "title": "Publish TypeScript declarations",
+      "description": "Describe the public API and option objects with a crystal-alert.d.ts declaration file.",
+      "acceptance": [
+        "The declaration file covers CrystalAlert and the Crystal singleton.",
+        "Alert, confirm, prompt, and toast options are typed.",
+        "Promise result types distinguish confirmation and dismissal.",
+        "package.json points to the declaration file."
+      ],
+      "issue": 14,
+      "status": "pending"
+    },
+    {
+      "id": 15,
+      "name": "defaults_and_i18n",
+      "title": "Add global defaults and localization",
+      "description": "Allow applications to configure default options and localized built-in labels.",
+      "acceptance": [
+        "Crystal.setDefaults updates defaults for future dialogs and toasts.",
+        "A locale object configures built-in labels such as OK, Cancel, Close, and Alert.",
+        "Per-call options override global defaults.",
+        "Existing defaults remain backward compatible."
+      ],
+      "issue": 15,
+      "status": "pending"
+    },
+    {
+      "id": 16,
+      "name": "responsive_layout",
+      "title": "Improve responsive layouts",
+      "description": "Keep modals and toasts usable on narrow screens without overflow.",
+      "acceptance": [
+        "Toasts fit within small viewport widths.",
+        "Modal content remains usable on mobile screens.",
+        "Existing desktop layout and theme variables remain compatible."
+      ],
+      "issue": 16,
+      "status": "pending"
+    },
+    {
+      "id": 17,
+      "name": "extended_css_variables",
+      "title": "Expand theme CSS variables",
+      "description": "Expose additional visual controls for toast sizing, colors, animation, icons, and progress bars.",
+      "acceptance": [
+        "Documented variables control the relevant visual properties.",
+        "The declared font-family variable is applied.",
+        "Base and bundled themes provide sensible values.",
+        "Existing custom themes continue to work."
+      ],
+      "issue": 18,
+      "status": "pending"
+    },
+    {
+      "id": 18,
+      "name": "automatic_dark_mode",
+      "title": "Support prefers-color-scheme dark mode",
+      "description": "Offer an opt-in automatic dark theme based on the operating system preference.",
+      "acceptance": [
+        "Applications can enable automatic dark mode.",
+        "The system preference selects the appropriate theme.",
+        "Explicit setTheme calls take precedence when configured.",
+        "The behavior works without runtime dependencies."
+      ],
+      "issue": 17,
+      "status": "pending"
+    },
+    {
+      "id": 19,
+      "name": "custom_icons",
+      "title": "Add question and danger icons with global customization",
+      "description": "Complete the built-in icon set and allow applications to override icons globally.",
+      "acceptance": [
+        "question and danger icons are available by name.",
+        "Crystal.setIcons accepts overrides for built-in icons.",
+        "Per-call iconHtml remains supported as an explicit markup escape hatch.",
+        "Default icons remain backward compatible."
+      ],
+      "issue": 19,
+      "status": "pending"
+    }
+  ]
+}

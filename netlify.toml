@@ -5,4 +5,4 @@
 [build]
   base = "website"
   publish = "."
-  command = "rm -rf vendor && mkdir -p vendor/themes && cp ../src/crystal-alert.js ../src/crystal-alert-styles.css vendor/ && cp ../src/themes/crystal-alert-dark.css ../src/themes/crystal-alert-minimal.css vendor/themes/"
+  command = "rm -rf vendor && mkdir -p vendor/themes && cp ../src/crystal-alert.js ../src/crystal-alert-styles.css vendor/ && cp ../src/themes/crystal-alert-dark.css ../src/themes/crystal-alert-minimal.css vendor/themes/ && cp ../docs/changelog.json vendor/changelog.json"
