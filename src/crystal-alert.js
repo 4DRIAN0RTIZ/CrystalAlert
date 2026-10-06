@@ -270,7 +270,7 @@ class CrystalAlert {
       }
 
       if (timer > 0) {
-        this.timer = setTimeout(() => this.close(null), timer);
+        this.timer = setTimeout(() => this.close({ dismiss: 'timer' }), timer);
         if (timerProgressBar) {
           const progressBar = this.modal.querySelector('.ca-modal-progress');
           if (progressBar) {

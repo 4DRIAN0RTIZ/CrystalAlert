@@ -17,7 +17,7 @@ describe('modal timers', () => {
     await vi.advanceTimersByTimeAsync(1);
     expect(Crystal.overlay.classList.contains('ca-show')).toBe(false);
     await vi.advanceTimersByTimeAsync(400);
-    await expect(promise).resolves.toBe(null);
+    await expect(promise).resolves.toEqual({ dismiss: 'timer' });
     vi.useRealTimers();
   });
 
