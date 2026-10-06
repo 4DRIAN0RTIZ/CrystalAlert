@@ -4,8 +4,13 @@ All notable changes to this project are documented here.
 
 ## [Unreleased]
 
+### Chore
+
+- Update CHANGELOG.md and docs/changelog.json [skip ci] ([5e92cac](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/5e92cacdaccfe972ffe63d7d3750db8ccbe7d12c))
+
 ### Features
 
+- Add modal timer progress bars ([ff410e5](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ff410e5d26ab7b948a6b4487f8b2a60f73b87dc8))
 - Add input prompt support ([7a67a64](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/7a67a644e116de134198c4508d6b93bd0cec019c))
 
 ## [1.1.6] - 2026-09-17
