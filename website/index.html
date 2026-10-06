@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700;9..144,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"/>
-  <link rel="stylesheet" href="vendor/crystal-alert-styles.css" />
+  <link rel="stylesheet" href="vendor/crystal-alert-styles.css?v=timer2" />
 
   <style>
     :root {
@@ -1878,7 +1878,7 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
   </div>
 </footer>
 
-<script src="vendor/crystal-alert.js"></script>
+<script src="vendor/crystal-alert.js?v=timer2"></script>
 <script>
   // The library declares `Crystal` with `const`, so it is not a property of
   // `window` and inline onclick handlers cannot see it. Expose it explicitly,
@@ -1996,23 +1996,26 @@ cp -r CrystalAlert/dist/themes your-project/</pre>
   }
 
   function timerDemo() {
-    let countdown = 5;
     Crystal.fire({
-      title: 'Auto-closing Alert',
-      html: `<p class="ca-text">This alert will close in <strong id="timer-count">${countdown}</strong> seconds.</p>`,
-      icon: 'info',
-      confirmButtonText: 'Close now',
-      onOpen: (modal) => {
-        const timerEl = modal.querySelector('#timer-count');
-        const interval = setInterval(() => {
-          countdown--;
-          if (timerEl) timerEl.textContent = countdown;
-          if (countdown <= 0) {
-            clearInterval(interval);
-            Crystal.close(null);
-          }
-        }, 1000);
-      }
+      title: 'Choose timer duration',
+      text: 'How many seconds should the alert stay open?',
+      input: 'number',
+      inputValue: 5,
+      inputPlaceholder: 'Seconds',
+      inputValidator: (value) => Number(value) > 0 ? '' : 'Enter a duration greater than zero.',
+      confirmButtonText: 'Start timer',
+      showCancelButton: true
+    }).then((seconds) => {
+      if (!seconds) return;
+
+      Crystal.fire({
+        title: 'Auto-closing Alert',
+        text: `This alert will close in ${seconds} seconds.`,
+        icon: 'info',
+        confirmButtonText: 'Close now',
+        timer: Number(seconds) * 1000,
+        timerProgressBar: true
+      });
     });
   }
 

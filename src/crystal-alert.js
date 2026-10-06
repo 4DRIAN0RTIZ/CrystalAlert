@@ -12,6 +12,7 @@ class CrystalAlert {
     this.themeStylesheet = null;
     this.themePath = 'themes/';
     this.toastPosition = null;
+    this.timer = null;
   }
 
   // Builds the DOM lazily on the first fire()/toast(). Doing it in the
@@ -117,6 +118,8 @@ class CrystalAlert {
    * @param {string} [options.html] - HTML content (overrides text)
    * @param {string} [options.icon] - Built-in icon: success, error, warning, info
    * @param {string} [options.iconHtml] - Custom icon HTML (overrides icon)
+   * @param {number} [options.timer] - Auto-close duration in milliseconds (0 = disabled)
+   * @param {boolean} [options.timerProgressBar] - Show remaining timer progress
    * @param {string} [options.confirmButtonText] - Confirm button label
    * @param {boolean} [options.showCancelButton] - Show cancel button
    * @param {string} [options.cancelButtonText] - Cancel button label
@@ -136,6 +139,8 @@ class CrystalAlert {
     inputValue = '',
     inputOptions = [],
     inputValidator = null,
+    timer = 0,
+    timerProgressBar = false,
     confirmButtonText = 'OK',
     showCancelButton = false,
     cancelButtonText = 'Cancel',
@@ -181,6 +186,7 @@ class CrystalAlert {
         <h2 class="ca-title"></h2>
         ${content}
         ${input ? '<div class="ca-input-container"></div>' : ''}
+        ${timer > 0 && timerProgressBar ? '<div class="ca-progress-bar ca-modal-progress"></div>' : ''}
         <div class="ca-actions">
           ${buttonsHtml}
         </div>
@@ -262,6 +268,19 @@ class CrystalAlert {
       if (onOpen && typeof onOpen === 'function') {
         onOpen(this.modal);
       }
+
+      if (timer > 0) {
+        this.timer = setTimeout(() => this.close(null), timer);
+        if (timerProgressBar) {
+          const progressBar = this.modal.querySelector('.ca-modal-progress');
+          if (progressBar) {
+            progressBar.style.transition = `width ${timer}ms linear`;
+            requestAnimationFrame(() => {
+              progressBar.style.width = '0%';
+            });
+          }
+        }
+      }
     });
   }
 
@@ -327,6 +346,10 @@ class CrystalAlert {
 
   close(result) {
     document.removeEventListener('keydown', this._escHandler);
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
+    }
     if (this.overlay) this.overlay.classList.remove('ca-show');
 
     // Must match the .ca-modal exit transition (transform 0.4s) in
