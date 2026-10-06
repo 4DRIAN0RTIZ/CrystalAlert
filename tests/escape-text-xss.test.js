@@ -8,6 +8,7 @@ const load = new Function(`${source}\n;return { Crystal, CrystalAlert };`);
 const { Crystal } = load();
 
 afterEach(() => {
+  if (Crystal.modalActive) Crystal.close(null);
   Crystal.modal.innerHTML = '';
   Crystal.overlay.classList.remove('ca-show');
   Crystal.toastContainer.innerHTML = '';
