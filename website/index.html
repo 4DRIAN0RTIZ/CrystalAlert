@@ -402,66 +402,176 @@ cp -r CrystalAlert/dist/themes your-project/</code></pre>
 
       <div role="tabpanel" id="panel-fire" aria-labelledby="tab-fire" class="panel" hidden>
         <h3><code>Crystal.fire(options)</code></h3>
-        <p>Display a modal alert dialog. Returns a Promise. Calls made while another modal is open are queued.</p>
+        <p>Open a modal alert or confirmation. It always returns a Promise. If another modal is open, new calls wait in FIFO order instead of replacing the active dialog.</p>
         <dl class="params">
-          <div><dt>title</dt><dd>The alert title text</dd></div>
-          <div><dt>text</dt><dd>Plain text content</dd></div>
-          <div><dt>html</dt><dd>HTML content (overrides text)</dd></div>
-          <div><dt>icon</dt><dd>success | error | warning | info</dd></div>
-          <div><dt>iconHtml</dt><dd>Custom HTML for icon</dd></div>
-          <div><dt>showCloseButton</dt><dd>Show X button in corner</dd></div>
-          <div><dt>showCancelButton</dt><dd>Show cancel button</dd></div>
-          <div><dt>preConfirm</dt><dd>Async function before confirm</dd></div>
-          <div><dt>timer / timerProgressBar</dt><dd>Auto-close in ms, with an optional progress bar</dd></div>
-          <div><dt>onOpen / onClose</dt><dd>Lifecycle callbacks</dd></div>
+          <div><dt>title</dt><dd>Title, rendered as plain text</dd></div>
+          <div><dt>text / html</dt><dd>Plain text or trusted HTML content</dd></div>
+          <div><dt>icon / iconHtml</dt><dd>Built-in or custom icon</dd></div>
+          <div><dt>confirmButtonText</dt><dd>Label for the confirm button</dd></div>
+          <div><dt>showCancelButton</dt><dd>Add a cancel button; result is <code>false</code></dd></div>
+          <div><dt>showCloseButton</dt><dd>Add an X button; result is <code>null</code></dd></div>
+          <div><dt>preConfirm</dt><dd>Sync or async callback before confirming</dd></div>
+          <div><dt>timer / timerProgressBar</dt><dd>Auto-close in ms, optionally showing progress</dd></div>
+          <div><dt>onOpen / onClose</dt><dd>Callbacks when the modal opens or finishes closing</dd></div>
         </dl>
+
+        <h4>Alert or confirmation</h4>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const result = await Crystal.fire({
+  title: 'Delete this project?',
+  text: 'This action cannot be undone.',
+  icon: 'warning',
+  showCancelButton: true,
+  confirmButtonText: 'Delete'
+});
+
+if (result === true) {
+  // The user confirmed.
+} else {
+  // The user cancelled or closed the modal.
+}</code></pre>
+        </div>
+
+        <h4>Async confirmation</h4>
+        <p><code>preConfirm</code> can return a value or a Promise. The confirm button shows a loading state while it is pending; return a message from <code>inputValidator</code> to keep an input prompt open.</p>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const result = await Crystal.fire({
+  title: 'Publish changes?',
+  icon: 'success',
+  preConfirm: async () => {
+    await publishChanges();
+    return { published: true };
+  },
+  onClose: (value) => handleClosedModal(value)
+});</code></pre>
+        </div>
+
+        <p class="panel-note"><strong>Results:</strong> confirmation resolves to <code>true</code> (or the value returned by <code>preConfirm</code>), cancel resolves to <code>false</code>, the close button/backdrop/ESC resolves to <code>null</code>, and a timer resolves to <code>{ dismiss: 'timer' }</code>.</p>
       </div>
 
       <div role="tabpanel" id="panel-toast" aria-labelledby="tab-toast" class="panel" hidden>
         <h3><code>Crystal.toast(options)</code></h3>
-        <p>Display a non-blocking toast notification.</p>
+        <p>Display a non-blocking notification. Toasts stack without blocking the page and dismiss themselves after <code>duration</code>.</p>
         <dl class="params">
-          <div><dt>title</dt><dd>The toast title text</dd></div>
-          <div><dt>text / html</dt><dd>Content (plain or HTML)</dd></div>
+          <div><dt>title</dt><dd>The toast title, rendered as plain text</dd></div>
+          <div><dt>text / html</dt><dd>Plain text or trusted HTML content</dd></div>
           <div><dt>icon / iconHtml</dt><dd>Built-in or custom icon</dd></div>
-          <div><dt>duration</dt><dd>Auto-dismiss ms (0 = persistent)</dd></div>
-          <div><dt>position</dt><dd>top-right | top-left | bottom-right | bottom-left</dd></div>
+          <div><dt>duration</dt><dd>Auto-dismiss in ms; use <code>0</code> for a persistent toast</dd></div>
+          <div><dt>position</dt><dd><code>top-right</code>, <code>top-left</code>, <code>bottom-right</code>, or <code>bottom-left</code></dd></div>
+          <div><dt>returns</dt><dd>A handle: <code>{ id, close(), update(options) }</code></dd></div>
         </dl>
+
+        <h4>Update one notification</h4>
+        <p>Use a handle when one operation changes state, such as “Uploading” becoming “Uploaded”. This updates the existing toast instead of creating a second one.</p>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const uploadToast = Crystal.toast({
+  title: 'Uploading file',
+  text: 'Please wait...',
+  icon: 'info',
+  duration: 0
+});
+
+// Call this when the upload finishes.
+uploadToast.update({
+  title: 'File uploaded',
+  text: 'The operation completed successfully.',
+  icon: 'success',
+  duration: 3000
+});
+
+// Close it programmatically when needed.
+uploadToast.close();</code></pre>
+        </div>
+
+        <h4>Close by id or close all</h4>
+        <p><code>close()</code> and the singleton methods keep the exit animation before removing the toast.</p>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const toast = Crystal.toast({
+  title: 'Needs attention',
+  duration: 0
+});
+
+Crystal.closeToast(toast.id); // close one
+Crystal.closeAllToasts();     // close every active toast</code></pre>
+        </div>
+
+        <p class="panel-note">Use the playground below for basic toast appearance, position, icon, and timer behavior. The examples above cover programmatic lifecycle control.</p>
       </div>
 
       <div role="tabpanel" id="panel-prompt" aria-labelledby="tab-prompt" class="panel" hidden>
         <h3><code>Crystal.prompt(title, options)</code></h3>
-        <p>Ask for a value. Resolves with the input value, or a falsy result when dismissed.</p>
+        <p>Open a modal with an input and resolve the Promise with the submitted value. It is a convenience wrapper around <code>Crystal.fire()</code>.</p>
         <dl class="params">
-          <div><dt>input</dt><dd>email | number | text | select</dd></div>
-          <div><dt>inputPlaceholder</dt><dd>Placeholder for the field</dd></div>
-          <div><dt>inputValidator</dt><dd>Return a message to block confirmation, or an empty string</dd></div>
-          <div><dt>inputOptions</dt><dd>Options for a select (strings or { value, label })</dd></div>
+          <div><dt>input</dt><dd><code>text</code>, <code>email</code>, <code>password</code>, <code>number</code>, <code>textarea</code>, <code>select</code>, or <code>checkbox</code></dd></div>
+          <div><dt>inputPlaceholder</dt><dd>Placeholder for text-like inputs</dd></div>
+          <div><dt>inputValue</dt><dd>Initial text, number, or checkbox value</dd></div>
+          <div><dt>inputOptions</dt><dd>Options for <code>select</code>: strings or <code>{ value, label }</code> objects</dd></div>
+          <div><dt>inputValidator</dt><dd>Return an error message to block submit, or an empty string to allow it</dd></div>
+          <div><dt>showCancelButton</dt><dd>Allow dismissal without submitting</dd></div>
         </dl>
+
+        <h4>Validate an email</h4>
         <div class="codeblock">
           <pre class="code"><code data-lang="js">const email = await Crystal.prompt('Subscribe', {
   input: 'email',
   inputPlaceholder: 'you@example.com',
-  inputValidator: (v) => v.includes('@') ? '' : 'Enter a valid email.'
+  showCancelButton: true,
+  inputValidator: (value) => {
+    return value.includes('@') ? '' : 'Enter a valid email.';
+  }
+});
+
+if (email) subscribe(email);</code></pre>
+        </div>
+
+        <h4>Select from fixed options</h4>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const frequency = await Crystal.prompt('Send me', {
+  input: 'select',
+  inputOptions: [
+    { value: 'daily', label: 'Daily digest' },
+    { value: 'weekly', label: 'Weekly summary' }
+  ],
+  inputValue: 'daily'
 });</code></pre>
         </div>
+
+        <p class="panel-note"><strong>Dismissal:</strong> cancel, ESC, the close button, or the backdrop returns a falsy result. Use <code>inputValidator</code> for client-side validation before accepting the value.</p>
       </div>
 
       <div role="tabpanel" id="panel-theme" aria-labelledby="tab-theme" class="panel" hidden>
         <h3><code>Crystal.setTheme(name)</code></h3>
-        <p>Load a theme CSS file. Returns a Promise that resolves when it is loaded.</p>
+        <p>Load one optional CSS theme at runtime. The current theme link is replaced instead of duplicated, and the method returns a Promise that resolves after the stylesheet loads.</p>
         <dl class="params">
-          <div><dt>name</dt><dd>default | dark | minimal | custom</dd></div>
-          <div><dt>returns</dt><dd>Promise that resolves when loaded</dd></div>
+          <div><dt>setTheme(name)</dt><dd><code>default</code>/<code>light</code>, <code>dark</code>, <code>minimal</code>, or a custom theme name</dd></div>
+          <div><dt>setThemePath(path)</dt><dd>Set the directory containing theme CSS files</dd></div>
+          <div><dt>getTheme()</dt><dd>Read the active theme name</dd></div>
+          <div><dt>returns</dt><dd>Promise; rejects when the stylesheet cannot be loaded</dd></div>
         </dl>
-        <div class="codeblock">
-          <pre class="code"><code data-lang="js">// Load dark theme
-await Crystal.setTheme('dark');
 
-// Custom theme path
-Crystal.setThemePath('/css/themes/');
+        <h4>Use the built-in themes</h4>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">Crystal.setThemePath('dist/themes/');
+
+await Crystal.setTheme('dark');
+const activeTheme = Crystal.getTheme(); // 'dark'
+
+await Crystal.setTheme('minimal');
+await Crystal.setTheme('default'); // remove the optional theme</code></pre>
+        </div>
+
+        <h4>Load a custom theme</h4>
+        <p>A custom theme is a CSS file named <code>crystal-alert-brand.css</code> in the configured theme path. It should override the library's <code>--ca-*</code> variables.</p>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="css">:root {
+  --ca-accent-color: #8b5cf6;
+  --ca-bg-color: rgba(30, 20, 60, 0.9);
+}</code></pre>
+          <pre class="code"><code data-lang="js">Crystal.setThemePath('/assets/themes/');
 await Crystal.setTheme('brand');</code></pre>
         </div>
+
+        <p class="panel-note"><strong>Tip:</strong> call <code>setThemePath()</code> once during setup. Use <code>try/catch</code> around <code>setTheme()</code> when the theme file may be unavailable.</p>
       </div>
     </div>
   </div>

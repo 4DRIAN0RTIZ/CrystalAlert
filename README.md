@@ -177,12 +177,20 @@ Crystal.fire({
 Display floating notifications that stack automatically.
 
 ```javascript
-Crystal.toast({
+const toast = Crystal.toast({
     title: 'New Message',
     text: 'You have an unread email',
     icon: 'info', // success, error, warning, info
     duration: 3000 // ms (0 = persistent)
 });
+
+// Toasts return a handle for programmatic control.
+toast.update({ title: 'Message read', icon: 'success' });
+toast.close();
+
+// Or control toasts through the singleton.
+Crystal.closeToast(toast.id);
+Crystal.closeAllToasts();
 ```
 
 ### Themes
@@ -244,6 +252,21 @@ Crystal.setTheme('default'); // Reset to default
 | `iconHtml` | String | '' | Custom icon HTML, rendered as markup (overrides `icon`). |
 | `duration` | Number | 3000 | Auto-dismiss in ms (0 = persistent). |
 | `position` | String | 'top-right' | Position: `top-right`, `top-left`, `bottom-right`, `bottom-left`. |
+
+`toast()` returns a handle with this shape:
+
+```javascript
+{
+    id: 'ca-toast-1',
+    close: () => boolean,
+    update: (options) => handle
+}
+```
+
+`close()` plays the exit animation before removing the toast. `update()` merges
+new options into the existing toast and restarts its duration timer. Use
+`Crystal.closeToast(id)` to close one toast or `Crystal.closeAllToasts()` to
+close every active toast.
 
 ### Security: `text` vs `html`
 

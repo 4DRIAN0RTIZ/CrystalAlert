@@ -15,6 +15,8 @@ class CrystalAlert {
     this.timer = null;
     this.modalQueue = [];
     this.modalActive = false;
+    this.toastCounter = 0;
+    this.toasts = new Map();
   }
 
   // Builds the DOM lazily on the first fire()/toast(). Doing it in the
@@ -399,17 +401,52 @@ class CrystalAlert {
    * @param {string} [options.iconHtml] - Custom icon HTML
    * @param {number} [options.duration] - Auto-dismiss in ms (0 = persistent)
    * @param {string} [options.position] - Position: top-right, top-left, bottom-right, bottom-left
+   * @returns {{id: string, close: function, update: function}} Toast handle
    */
-  toast({
-    title = '',
-    text = '',
-    html = '',
-    icon = 'info',
-    iconHtml = '',
-    duration = 3000,
-    position = 'top-right'
-  } = {}) {
+  toast(options = {}) {
     this.ensureDom();
+
+    const id = `ca-toast-${++this.toastCounter}`;
+    const state = {
+      id,
+      options: {
+        title: '',
+        text: '',
+        html: '',
+        icon: 'info',
+        iconHtml: '',
+        duration: 3000,
+        position: 'top-right',
+        ...options
+      },
+      element: document.createElement('div'),
+      timeout: null,
+      closing: false
+    };
+    state.element.className = 'ca-toast';
+    state.element.dataset.toastId = id;
+    this.toasts.set(id, state);
+    this.toastContainer.appendChild(state.element);
+    state.element.addEventListener('click', () => this.closeToast(id));
+    this.renderToast(state);
+
+    return {
+      id,
+      close: () => this.closeToast(id),
+      update: (nextOptions = {}) => this.updateToast(id, nextOptions)
+    };
+  }
+
+  renderToast(state) {
+    const {
+      title,
+      text,
+      html,
+      icon,
+      iconHtml,
+      duration,
+      position
+    } = state.options;
 
     // Only touch the container class when the position actually changes,
     // otherwise every call reflows the container and visible toasts jump.
@@ -418,9 +455,6 @@ class CrystalAlert {
       this.toastPosition = position;
     }
 
-    const toastEl = document.createElement('div');
-    toastEl.className = 'ca-toast';
-
     const iconColors = {
       success: '#059669',
       error: '#dc2626',
@@ -428,21 +462,18 @@ class CrystalAlert {
       info: '#2563eb'
     };
     const iconColor = iconColors[icon] || '#333';
-
-    // Icon markup
     const iconMarkup = iconHtml
       ? `<div class="ca-toast-icon">${iconHtml}</div>`
       : `<div class="ca-toast-icon" style="color: ${iconColor}">${this.getIconSVG(icon)}</div>`;
-
-    // Content: html takes priority over text; text goes in via textContent (see below)
     const content = html || (text ? '<p class="ca-toast-text"></p>' : '');
-
-    // Progress bar only if duration > 0
     const progressBar = duration > 0
       ? `<div class="ca-progress-bar" style="transition: width ${duration}ms linear; width: 100%;"></div>`
       : '';
 
-    toastEl.innerHTML = `
+    if (state.timeout) clearTimeout(state.timeout);
+    state.timeout = null;
+    state.element.classList.remove('hide');
+    state.element.innerHTML = `
       ${iconMarkup}
       <div class="ca-toast-content">
         <h3 class="ca-toast-title"></h3>
@@ -450,42 +481,55 @@ class CrystalAlert {
       </div>
       ${progressBar}
     `;
-
-    toastEl.querySelector('.ca-toast-title').textContent = title;
+    state.element.querySelector('.ca-toast-title').textContent = title;
 
     if (!html && text) {
-      const textEl = toastEl.querySelector('.ca-toast-text');
+      const textEl = state.element.querySelector('.ca-toast-text');
       if (textEl) textEl.textContent = text;
     }
 
-    this.toastContainer.appendChild(toastEl);
-
-    // Animate progress bar
     if (duration > 0) {
       requestAnimationFrame(() => {
-        const bar = toastEl.querySelector('.ca-progress-bar');
+        if (state.closing) return;
+        const bar = state.element.querySelector('.ca-progress-bar');
         if (bar) bar.style.width = '0%';
       });
+      state.timeout = setTimeout(() => this.closeToast(state.id), duration);
     }
+  }
 
-    let timeout;
-    const removeToast = () => {
-      toastEl.classList.add('hide');
-      toastEl.addEventListener('transitionend', () => {
-        if (toastEl.parentElement) toastEl.remove();
-      });
+  updateToast(id, options = {}) {
+    const state = this.toasts.get(id);
+    if (!state || state.closing) return null;
+    state.options = { ...state.options, ...options };
+    this.renderToast(state);
+    return {
+      id,
+      close: () => this.closeToast(id),
+      update: (nextOptions = {}) => this.updateToast(id, nextOptions)
     };
+  }
 
-    if (duration > 0) {
-      timeout = setTimeout(removeToast, duration);
-    }
+  closeToast(id) {
+    const state = this.toasts.get(id);
+    if (!state || state.closing) return false;
 
-    toastEl.addEventListener('click', () => {
-      if (timeout) clearTimeout(timeout);
-      removeToast();
-    });
+    state.closing = true;
+    if (state.timeout) clearTimeout(state.timeout);
+    state.timeout = null;
+    state.element.classList.add('hide');
+    state.element.addEventListener('transitionend', () => {
+      if (state.element.parentElement) state.element.remove();
+      this.toasts.delete(id);
+    }, { once: true });
+    return true;
+  }
 
-    return toastEl;
+  /**
+   * Close every active toast, preserving each toast's exit animation.
+   */
+  closeAllToasts() {
+    for (const id of this.toasts.keys()) this.closeToast(id);
   }
 
   getIconSVG(type) {
