@@ -9,10 +9,28 @@ All notable changes to this project are documented here.
 - Exclude automated changelog commits ([3ba7748](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/3ba774871ade43d2425831586e958632c74fa311))
 - Return timer dismissal reason ([76ba064](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/76ba064f5519ef5ac43e8ec195c74c8e3073f780))
 
+### CI
+
+- Publish changelog with website ([2540758](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/25407581c160b34dfdf5087042bbabbaa90209dc))
+
+### Chore
+
+- Add project license and favicon ([6df90fa](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/6df90fae681f4f3d4c0dc4a5072ff6635e4cb173))
+
+### Documentation
+
+- Document queued modal behavior ([99a1a82](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/99a1a822188615d231251b9cdd02387f18c93a2d))
+
 ### Features
 
+- Show selected playground snippets ([4bff0cb](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/4bff0cb00b6544ac6aaeeae4d355bef7a105bc1c))
+- Queue concurrent modal dialogs ([4dea497](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/4dea497e3627ae668e1c9fae7924f128b32d652c))
 - Add modal timer progress bars ([ff410e5](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ff410e5d26ab7b948a6b4487f8b2a60f73b87dc8))
 - Add input prompt support ([7a67a64](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/7a67a644e116de134198c4508d6b93bd0cec019c))
+
+### Refactor
+
+- Redesign and modularize landing page ([15c3999](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/15c399969524d170335f33c634ca27190d297186))
 
 ## [1.1.6] - 2026-09-17
 
