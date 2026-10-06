@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented here.
 
+## [Unreleased]
+
+### Features
+
+- Add input prompt support ([7a67a64](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/7a67a644e116de134198c4508d6b93bd0cec019c))
+
 ## [1.1.6] - 2026-09-17
 
 ### Bug Fixes
