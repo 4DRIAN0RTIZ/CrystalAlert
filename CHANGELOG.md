@@ -8,11 +8,6 @@ All notable changes to this project are documented here.
 
 - Return timer dismissal reason ([76ba064](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/76ba064f5519ef5ac43e8ec195c74c8e3073f780))
 
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([c8095ec](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/c8095eccbc7a8dd6f062ea81f1f85664b33d55a9))
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([5e92cac](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/5e92cacdaccfe972ffe63d7d3750db8ccbe7d12c))
-
 ### Features
 
 - Add modal timer progress bars ([ff410e5](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ff410e5d26ab7b948a6b4487f8b2a60f73b87dc8))
@@ -37,19 +32,11 @@ All notable changes to this project are documented here.
 - Batch of small defects in modal and toast lifecycle ([add75c4](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/add75c4063ae1d59111f5e5b455e2714ff1262dc))
 - Render title and text as plain text to prevent XSS ([ddb88c8](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ddb88c8725a4071aa96eef9aa15ec87a432a2e40))
 
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([38059cb](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/38059cbdb2f5a650a9513e72435250950ee24905))
-
 ## [1.1.3] - 2026-09-07
 
 ### Bug Fixes
 
 - Adjust netlify.toml for the website base directory ([20bfe4a](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/20bfe4a6936dc21ed4c6a8d358b410dd41ce737d))
-
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([6adea27](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/6adea270c35e271c70100e7f137e7c92a260c3c2))
 
 ## [1.1.2] - 2026-09-07
 
@@ -57,19 +44,11 @@ All notable changes to this project are documented here.
 
 - Serve the demo assets from the publish directory ([114b086](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/114b086e96fed55bd0a8e93b9c31e4b384daca81))
 
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([caf12b1](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/caf12b16aa3c621d582c5df0aead40c5b014e016))
-
 ## [1.1.1] - 2026-09-07
 
 ### Bug Fixes
 
 - Pin auto-install-peers to match the lockfile ([2af09b7](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/2af09b7fb60d184c10906e1be3ab8947e9165ae7))
-
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([d51f980](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/d51f980077c5f34d9baf50fee5b2d679978f0e4b))
 
 ## [1.1.0] - 2026-09-07
 
@@ -80,10 +59,6 @@ All notable changes to this project are documented here.
 ### CI
 
 - Automate changelog and releases ([48e2ddd](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/48e2ddd354d614275743ea052f6c370284d42a12))
-
-### Chore
-
-- Update CHANGELOG.md and docs/changelog.json [skip ci] ([ceb1431](https://github.com/4DRIAN0RTIZ/CrystalAlert/commit/ceb1431354287a75d3e8f00e2e698122238d9fb7))
 
 ### Features
 
