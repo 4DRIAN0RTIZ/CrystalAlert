@@ -95,7 +95,8 @@ Crystal.fire({
 
 Set `timer` in milliseconds to close a modal automatically. Add
 `timerProgressBar: true` to show the remaining time at the bottom of the modal.
-A manual confirmation or dismissal cancels the timer.
+A manual confirmation or dismissal cancels the timer. When the timer expires,
+the promise resolves with `{ dismiss: 'timer' }`.
 
 ```javascript
 Crystal.fire({
