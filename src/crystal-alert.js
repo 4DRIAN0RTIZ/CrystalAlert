@@ -131,6 +131,11 @@ class CrystalAlert {
     html = '',
     icon = '',
     iconHtml = '',
+    input = null,
+    inputPlaceholder = '',
+    inputValue = '',
+    inputOptions = [],
+    inputValidator = null,
     confirmButtonText = 'OK',
     showCancelButton = false,
     cancelButtonText = 'Cancel',
@@ -145,7 +150,6 @@ class CrystalAlert {
       this.resolvePromise = resolve;
       this.onCloseCallback = onClose;
 
-      // Icon: custom HTML takes priority
       let iconMarkup = '';
       if (iconHtml) {
         iconMarkup = `<div class="ca-icon custom">${iconHtml}</div>`;
@@ -153,15 +157,10 @@ class CrystalAlert {
         iconMarkup = `<div class="ca-icon ${icon}">${this.getIconSVG(icon)}</div>`;
       }
 
-      // Content: html takes priority over text; text goes in via textContent (see below)
       const content = html || (text ? '<p class="ca-text"></p>' : '');
-
-      // Close button
       const closeBtn = showCloseButton
         ? `<button class="ca-close" aria-label="Close">&times;</button>`
         : '';
-
-      // Action buttons
       let buttonsHtml = `
         <button class="ca-btn ca-btn-confirm">
           <span class="ca-btn-text">${confirmButtonText}</span>
@@ -181,6 +180,7 @@ class CrystalAlert {
         ${iconMarkup}
         <h2 class="ca-title"></h2>
         ${content}
+        ${input ? '<div class="ca-input-container"></div>' : ''}
         <div class="ca-actions">
           ${buttonsHtml}
         </div>
@@ -193,29 +193,52 @@ class CrystalAlert {
         if (textEl) textEl.textContent = text;
       }
 
+      let inputElement = null;
+      if (input) {
+        inputElement = this.createInput({
+          type: input === true ? 'text' : input,
+          placeholder: inputPlaceholder,
+          value: inputValue,
+          options: inputOptions
+        });
+        this.modal.querySelector('.ca-input-container').appendChild(inputElement);
+      }
+
       const confirmBtn = this.modal.querySelector('.ca-btn-confirm');
       const cancelBtn = this.modal.querySelector('.ca-btn-cancel');
       const closeBtnEl = this.modal.querySelector('.ca-close');
 
-      // Confirm handler with async support
       if (confirmBtn) {
         confirmBtn.onclick = async () => {
-          if (preConfirm && typeof preConfirm === 'function') {
-            confirmBtn.classList.add('ca-loading');
-            confirmBtn.disabled = true;
-            if (cancelBtn) cancelBtn.disabled = true;
+          const value = inputElement ? this.getInputValue(inputElement) : true;
+          this.hideValidationMessage();
+          confirmBtn.classList.add('ca-loading');
+          confirmBtn.disabled = true;
+          if (cancelBtn) cancelBtn.disabled = true;
 
-            try {
-              const result = await preConfirm();
-              this.close(result !== undefined ? result : true);
-            } catch (error) {
-              confirmBtn.classList.remove('ca-loading');
-              confirmBtn.disabled = false;
-              if (cancelBtn) cancelBtn.disabled = false;
-              console.error('CrystalAlert preConfirm error:', error);
+          try {
+            if (inputValidator && typeof inputValidator === 'function') {
+              const validationMessage = await inputValidator(value);
+              if (validationMessage) {
+                this.showValidationMessage(validationMessage);
+                confirmBtn.classList.remove('ca-loading');
+                confirmBtn.disabled = false;
+                if (cancelBtn) cancelBtn.disabled = false;
+                return;
+              }
             }
-          } else {
-            this.close(true);
+
+            if (preConfirm && typeof preConfirm === 'function') {
+              const result = await preConfirm(inputElement ? value : undefined);
+              this.close(result !== undefined ? result : value);
+            } else {
+              this.close(value);
+            }
+          } catch (error) {
+            confirmBtn.classList.remove('ca-loading');
+            confirmBtn.disabled = false;
+            if (cancelBtn) cancelBtn.disabled = false;
+            console.error('CrystalAlert preConfirm error:', error);
           }
         };
         confirmBtn.focus();
@@ -229,7 +252,6 @@ class CrystalAlert {
         closeBtnEl.onclick = () => this.close(null);
       }
 
-      // Keyboard: Escape to close
       this._escHandler = (e) => {
         if (e.key === 'Escape') this.close(null);
       };
@@ -240,6 +262,66 @@ class CrystalAlert {
       if (onOpen && typeof onOpen === 'function') {
         onOpen(this.modal);
       }
+    });
+  }
+
+  createInput({ type, placeholder, value, options }) {
+    const element = type === 'textarea' || type === 'select'
+      ? document.createElement(type)
+      : document.createElement('input');
+
+    element.className = 'ca-input';
+    if (type !== 'textarea' && type !== 'select') {
+      element.type = type;
+    }
+    if (placeholder) element.placeholder = placeholder;
+
+    if (type === 'select') {
+      for (const option of options || []) {
+        const optionElement = document.createElement('option');
+        const optionValue = typeof option === 'object' ? option.value : option;
+        optionElement.value = optionValue;
+        optionElement.textContent = typeof option === 'object'
+          ? (option.label ?? option.value)
+          : option;
+        element.appendChild(optionElement);
+      }
+      if (value !== '') element.value = value;
+    } else if (type === 'checkbox') {
+      element.checked = Boolean(value);
+    } else if (value !== undefined && value !== null) {
+      element.value = value;
+    }
+
+    return element;
+  }
+
+  getInputValue(inputElement) {
+    return inputElement.type === 'checkbox'
+      ? inputElement.checked
+      : inputElement.value;
+  }
+
+  showValidationMessage(message) {
+    let messageElement = this.modal.querySelector('.ca-validation-message');
+    if (!messageElement) {
+      messageElement = document.createElement('p');
+      messageElement.className = 'ca-validation-message';
+      this.modal.querySelector('.ca-input-container').appendChild(messageElement);
+    }
+    messageElement.textContent = message;
+  }
+
+  hideValidationMessage() {
+    const messageElement = this.modal && this.modal.querySelector('.ca-validation-message');
+    if (messageElement) messageElement.remove();
+  }
+
+  prompt(title, options = {}) {
+    return this.fire({
+      ...options,
+      title,
+      input: options.input || 'text'
     });
   }
 

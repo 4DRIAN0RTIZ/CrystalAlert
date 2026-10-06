@@ -354,8 +354,35 @@
 
 .ca-modal .ca-html-content input:focus,
 .ca-modal .ca-html-content select:focus,
-.ca-modal .ca-html-content textarea:focus {
+.ca-modal .ca-html-content textarea:focus,
+.ca-modal .ca-input:focus {
   outline: none;
   border-color: var(--ca-confirm-color);
   box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+}
+
+.ca-input-container {
+  margin-bottom: 1.5rem;
+}
+
+.ca-input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: rgba(255, 255, 255, 0.8);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.ca-input[type='checkbox'] {
+  width: auto;
+  padding: 0;
+}
+
+.ca-validation-message {
+  margin: 0.5rem 0 0;
+  color: var(--ca-cancel-color);
+  font-size: 0.9rem;
 }
