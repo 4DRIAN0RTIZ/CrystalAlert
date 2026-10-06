@@ -91,6 +91,17 @@ Crystal.fire({
 });
 ```
 
+### Queued Modals
+
+Calls to `Crystal.fire()` made while another modal is open are queued in
+FIFO order. Each returned promise resolves only after its own modal is
+confirmed or dismissed; queued calls never replace an active modal.
+
+```javascript
+const first = Crystal.fire({ title: 'First step' });
+const second = Crystal.fire({ title: 'Second step' });
+```
+
 ### Timed Modals
 
 Set `timer` in milliseconds to close a modal automatically. Add
@@ -246,10 +257,27 @@ inserted as-is; never pass unsanitized user input to them.
 
 | File | Minified | Gzipped |
 |------|----------|---------|
-| JS | 5.6 KB | 1.9 KB |
-| CSS | 6.1 KB | 1.9 KB |
-| **Total** | **11.7 KB** | **3.8 KB** |
+| JS | 8.3 KB | 2.7 KB |
+| CSS | 6.9 KB | 2.0 KB |
+| **Total** | **15.2 KB** | **4.8 KB** |
+
+## Comparison
+
+| | CrystalAlert | SweetAlert2 | Notiflix |
+|---|---|---|---|
+| Gzipped size | **4.8 KB** | 20.1 KB | 15.9 KB |
+| Minified size | **15.2 KB** | 77.3 KB | 88.9 KB |
+| Runtime dependencies | 0 | 0 | 0 |
+| Alerts and confirms | Yes | Yes | Yes |
+| Toasts | Yes | Yes | Yes |
+| Promise-based API | Yes | Yes | Callbacks |
+| Timers | Yes, with progress bar | Yes, with progress bar | Toast timeout |
+| Prompts and inputs | 7 types (text, email, password, number, textarea, select, checkbox) | More (adds radio, range, file, date and others) | Single text prompt |
+| Loading, report and block UI | Async button spinner only | Loading state on buttons | Yes, dedicated modules |
+| Theming | CSS variables, dark and minimal themes | CSS and official theme packages | Options object |
+
+Sizes are gzip -9 of the official CDN bundles (CrystalAlert JS + CSS; SweetAlert2 v11.26.25 `sweetalert2.all.min.js`; Notiflix v3.2.8 `notiflix-aio`), measured Oct 2026, 1 KB = 1024 B. CrystalAlert is about 4x smaller than SweetAlert2 and 3x smaller than Notiflix, but SweetAlert2 offers a broader feature set.
 
 ## License
 
-MIT License - Created by NeanderTech
+MIT License - Created by NeanderTech. See [LICENSE](LICENSE).
