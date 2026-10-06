@@ -13,6 +13,8 @@ class CrystalAlert {
     this.themePath = 'themes/';
     this.toastPosition = null;
     this.timer = null;
+    this.modalQueue = [];
+    this.modalActive = false;
   }
 
   // Builds the DOM lazily on the first fire()/toast(). Doing it in the
@@ -128,7 +130,21 @@ class CrystalAlert {
    * @param {function} [options.onOpen] - Callback when modal opens
    * @param {function} [options.onClose] - Callback when modal closes
    */
-  fire({
+  fire(options = {}) {
+    return new Promise((resolve) => {
+      this.modalQueue.push({ options, resolve });
+      this.processModalQueue();
+    });
+  }
+
+  processModalQueue() {
+    if (this.modalActive || this.modalQueue.length === 0) return;
+
+    const { options, resolve } = this.modalQueue.shift();
+    this.showModal(options, resolve);
+  }
+
+  showModal({
     title = 'Alert',
     text = '',
     html = '',
@@ -148,39 +164,39 @@ class CrystalAlert {
     preConfirm = null,
     onOpen = null,
     onClose = null
-  } = {}) {
-    return new Promise((resolve) => {
-      this.ensureDom();
-      this.activeElement = document.activeElement;
-      this.resolvePromise = resolve;
-      this.onCloseCallback = onClose;
+  } = {}, resolvePromise) {
+    this.ensureDom();
+    this.modalActive = true;
+    this.activeElement = document.activeElement;
+    this.resolvePromise = resolvePromise;
+    this.onCloseCallback = onClose;
 
-      let iconMarkup = '';
-      if (iconHtml) {
-        iconMarkup = `<div class="ca-icon custom">${iconHtml}</div>`;
-      } else if (icon) {
-        iconMarkup = `<div class="ca-icon ${icon}">${this.getIconSVG(icon)}</div>`;
-      }
+    let iconMarkup = '';
+    if (iconHtml) {
+      iconMarkup = `<div class="ca-icon custom">${iconHtml}</div>`;
+    } else if (icon) {
+      iconMarkup = `<div class="ca-icon ${icon}">${this.getIconSVG(icon)}</div>`;
+    }
 
-      const content = html || (text ? '<p class="ca-text"></p>' : '');
-      const closeBtn = showCloseButton
-        ? `<button class="ca-close" aria-label="Close">&times;</button>`
-        : '';
-      let buttonsHtml = `
-        <button class="ca-btn ca-btn-confirm">
-          <span class="ca-btn-text">${confirmButtonText}</span>
-          <div class="ca-spinner"></div>
-        </button>
+    const content = html || (text ? '<p class="ca-text"></p>' : '');
+    const closeBtn = showCloseButton
+      ? `<button class="ca-close" aria-label="Close">&times;</button>`
+      : '';
+    let buttonsHtml = `
+      <button class="ca-btn ca-btn-confirm">
+        <span class="ca-btn-text">${confirmButtonText}</span>
+        <div class="ca-spinner"></div>
+      </button>
+    `;
+
+    if (showCancelButton) {
+      buttonsHtml = `
+        <button class="ca-btn ca-btn-cancel">${cancelButtonText}</button>
+        ${buttonsHtml}
       `;
+    }
 
-      if (showCancelButton) {
-        buttonsHtml = `
-          <button class="ca-btn ca-btn-cancel">${cancelButtonText}</button>
-          ${buttonsHtml}
-        `;
-      }
-
-      this.modal.innerHTML = `
+    this.modal.innerHTML = `
         ${closeBtn}
         ${iconMarkup}
         <h2 class="ca-title"></h2>
@@ -192,29 +208,29 @@ class CrystalAlert {
         </div>
       `;
 
-      this.modal.querySelector('.ca-title').textContent = title;
+    this.modal.querySelector('.ca-title').textContent = title;
 
-      if (!html && text) {
-        const textEl = this.modal.querySelector('.ca-text');
-        if (textEl) textEl.textContent = text;
-      }
+    if (!html && text) {
+      const textEl = this.modal.querySelector('.ca-text');
+      if (textEl) textEl.textContent = text;
+    }
 
-      let inputElement = null;
-      if (input) {
-        inputElement = this.createInput({
-          type: input === true ? 'text' : input,
-          placeholder: inputPlaceholder,
-          value: inputValue,
-          options: inputOptions
-        });
-        this.modal.querySelector('.ca-input-container').appendChild(inputElement);
-      }
+    let inputElement = null;
+    if (input) {
+      inputElement = this.createInput({
+        type: input === true ? 'text' : input,
+        placeholder: inputPlaceholder,
+        value: inputValue,
+        options: inputOptions
+      });
+      this.modal.querySelector('.ca-input-container').appendChild(inputElement);
+    }
 
-      const confirmBtn = this.modal.querySelector('.ca-btn-confirm');
-      const cancelBtn = this.modal.querySelector('.ca-btn-cancel');
-      const closeBtnEl = this.modal.querySelector('.ca-close');
+    const confirmBtn = this.modal.querySelector('.ca-btn-confirm');
+    const cancelBtn = this.modal.querySelector('.ca-btn-cancel');
+    const closeBtnEl = this.modal.querySelector('.ca-close');
 
-      if (confirmBtn) {
+    if (confirmBtn) {
         confirmBtn.onclick = async () => {
           const value = inputElement ? this.getInputValue(inputElement) : true;
           this.hideValidationMessage();
@@ -250,38 +266,37 @@ class CrystalAlert {
         confirmBtn.focus();
       }
 
-      if (cancelBtn) {
-        cancelBtn.onclick = () => this.close(false);
-      }
+    if (cancelBtn) {
+      cancelBtn.onclick = () => this.close(false);
+    }
 
-      if (closeBtnEl) {
-        closeBtnEl.onclick = () => this.close(null);
-      }
+    if (closeBtnEl) {
+      closeBtnEl.onclick = () => this.close(null);
+    }
 
-      this._escHandler = (e) => {
-        if (e.key === 'Escape') this.close(null);
-      };
-      document.addEventListener('keydown', this._escHandler);
+    this._escHandler = (e) => {
+      if (e.key === 'Escape') this.close(null);
+    };
+    document.addEventListener('keydown', this._escHandler);
 
-      this.overlay.classList.add('ca-show');
+    this.overlay.classList.add('ca-show');
 
-      if (onOpen && typeof onOpen === 'function') {
-        onOpen(this.modal);
-      }
+    if (onOpen && typeof onOpen === 'function') {
+      onOpen(this.modal);
+    }
 
-      if (timer > 0) {
-        this.timer = setTimeout(() => this.close({ dismiss: 'timer' }), timer);
-        if (timerProgressBar) {
-          const progressBar = this.modal.querySelector('.ca-modal-progress');
-          if (progressBar) {
-            progressBar.style.transition = `width ${timer}ms linear`;
-            requestAnimationFrame(() => {
-              progressBar.style.width = '0%';
-            });
-          }
+    if (timer > 0) {
+      this.timer = setTimeout(() => this.close({ dismiss: 'timer' }), timer);
+      if (timerProgressBar) {
+        const progressBar = this.modal.querySelector('.ca-modal-progress');
+        if (progressBar) {
+          progressBar.style.transition = `width ${timer}ms linear`;
+          requestAnimationFrame(() => {
+            progressBar.style.width = '0%';
+          });
         }
       }
-    });
+    }
   }
 
   createInput({ type, placeholder, value, options }) {
@@ -345,6 +360,8 @@ class CrystalAlert {
   }
 
   close(result) {
+    if (!this.modalActive) return;
+
     document.removeEventListener('keydown', this._escHandler);
     if (this.timer) {
       clearTimeout(this.timer);
@@ -352,20 +369,23 @@ class CrystalAlert {
     }
     if (this.overlay) this.overlay.classList.remove('ca-show');
 
+    const onCloseCallback = this.onCloseCallback;
+    const resolvePromise = this.resolvePromise;
+    const activeElement = this.activeElement;
+    this.modalActive = false;
+    this.onCloseCallback = null;
+    this.resolvePromise = null;
+    this.activeElement = null;
+
     // Must match the .ca-modal exit transition (transform 0.4s) in
     // crystal-alert-styles.css so focus/promise settle after it finishes.
     setTimeout(() => {
-      if (this.onCloseCallback && typeof this.onCloseCallback === 'function') {
-        this.onCloseCallback(result);
+      if (onCloseCallback && typeof onCloseCallback === 'function') {
+        onCloseCallback(result);
       }
-      if (this.resolvePromise) {
-        this.resolvePromise(result);
-        this.resolvePromise = null;
-      }
-      if (this.activeElement) {
-        this.activeElement.focus();
-        this.activeElement = null;
-      }
+      if (resolvePromise) resolvePromise(result);
+      if (activeElement) activeElement.focus();
+      this.processModalQueue();
     }, 400);
   }
 
