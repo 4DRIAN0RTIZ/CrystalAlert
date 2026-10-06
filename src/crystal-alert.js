@@ -2,6 +2,9 @@
  * CrystalAlert - Lightweight alert & toast library
  * @version 1.0.0
  */
+// Slightly above the ~0.4s CSS exit transition.
+const TOAST_EXIT_FALLBACK_MS = 600;
+
 class CrystalAlert {
   constructor() {
     this.overlay = null;
@@ -401,12 +404,16 @@ class CrystalAlert {
    * @param {string} [options.iconHtml] - Custom icon HTML
    * @param {number} [options.duration] - Auto-dismiss in ms (0 = persistent)
    * @param {string} [options.position] - Position: top-right, top-left, bottom-right, bottom-left
-   * @returns {{id: string, close: function, update: function}} Toast handle
+   * @param {boolean} [options.pauseOnHover] - Pause the timer while hovered
+   * @param {boolean} [options.showCloseButton] - Show a dismiss button
+   * @param {function} [options.onClose] - Callback receiving the dismiss reason
+   * @returns {{id: string, close: function, update: function, closed: Promise}} Toast handle
    */
   toast(options = {}) {
     this.ensureDom();
 
     const id = `ca-toast-${++this.toastCounter}`;
+    let resolveClosed;
     const state = {
       id,
       options: {
@@ -417,23 +424,47 @@ class CrystalAlert {
         iconHtml: '',
         duration: 3000,
         position: 'top-right',
+        pauseOnHover: false,
+        showCloseButton: false,
+        onClose: null,
         ...options
       },
       element: document.createElement('div'),
       timeout: null,
-      closing: false
+      timerStartedAt: null,
+      remainingDuration: null,
+      hovered: false,
+      closing: false,
+      closed: new Promise((resolve) => { resolveClosed = resolve; }),
+      resolveClosed
     };
     state.element.className = 'ca-toast';
     state.element.dataset.toastId = id;
     this.toasts.set(id, state);
     this.toastContainer.appendChild(state.element);
-    state.element.addEventListener('click', () => this.closeToast(id));
+    state.element.addEventListener('click', (event) => {
+      const reason = event.target.closest('.ca-toast-close') ? 'button' : 'click';
+      this.closeToast(id, reason);
+    });
+    state.element.addEventListener('mouseenter', () => {
+      state.hovered = true;
+      this.pauseToastTimer(id);
+    });
+    state.element.addEventListener('mouseleave', () => {
+      state.hovered = false;
+      this.resumeToastTimer(id);
+    });
     this.renderToast(state);
 
+    return this.createToastHandle(state);
+  }
+
+  createToastHandle(state) {
     return {
-      id,
-      close: () => this.closeToast(id),
-      update: (nextOptions = {}) => this.updateToast(id, nextOptions)
+      id: state.id,
+      close: () => this.closeToast(state.id),
+      update: (nextOptions = {}) => this.updateToast(state.id, nextOptions),
+      closed: state.closed
     };
   }
 
@@ -445,7 +476,8 @@ class CrystalAlert {
       icon,
       iconHtml,
       duration,
-      position
+      position,
+      showCloseButton
     } = state.options;
 
     // Only touch the container class when the position actually changes,
@@ -466,12 +498,15 @@ class CrystalAlert {
       ? `<div class="ca-toast-icon">${iconHtml}</div>`
       : `<div class="ca-toast-icon" style="color: ${iconColor}">${this.getIconSVG(icon)}</div>`;
     const content = html || (text ? '<p class="ca-toast-text"></p>' : '');
+    const closeButton = showCloseButton
+      ? '<button type="button" class="ca-toast-close" aria-label="Close">&times;</button>'
+      : '';
     const progressBar = duration > 0
       ? `<div class="ca-progress-bar" style="transition: width ${duration}ms linear; width: 100%;"></div>`
       : '';
 
-    if (state.timeout) clearTimeout(state.timeout);
-    state.timeout = null;
+    this.clearToastTimer(state);
+    state.remainingDuration = duration;
     state.element.classList.remove('hide');
     state.element.innerHTML = `
       ${iconMarkup}
@@ -479,6 +514,7 @@ class CrystalAlert {
         <h3 class="ca-toast-title"></h3>
         ${content}
       </div>
+      ${closeButton}
       ${progressBar}
     `;
     state.element.querySelector('.ca-toast-title').textContent = title;
@@ -489,13 +525,57 @@ class CrystalAlert {
     }
 
     if (duration > 0) {
-      requestAnimationFrame(() => {
-        if (state.closing) return;
-        const bar = state.element.querySelector('.ca-progress-bar');
-        if (bar) bar.style.width = '0%';
-      });
-      state.timeout = setTimeout(() => this.closeToast(state.id), duration);
+      this.startToastTimer(state);
+      if (state.hovered && state.options.pauseOnHover) this.pauseToastTimer(state.id);
     }
+  }
+
+  clearToastTimer(state) {
+    if (state.timeout) clearTimeout(state.timeout);
+    state.timeout = null;
+    state.timerStartedAt = null;
+  }
+
+  startToastTimer(state) {
+    this.clearToastTimer(state);
+    if (state.remainingDuration <= 0 || state.closing) {
+      if (state.remainingDuration <= 0) this.closeToast(state.id, 'timer');
+      return;
+    }
+
+    state.timerStartedAt = Date.now();
+    const duration = state.remainingDuration;
+    state.timeout = setTimeout(() => this.closeToast(state.id, 'timer'), duration);
+    requestAnimationFrame(() => {
+      if (state.closing || state.hovered) return;
+      const bar = state.element.querySelector('.ca-progress-bar');
+      if (bar) {
+        bar.style.transition = `width ${duration}ms linear`;
+        bar.style.width = '0%';
+      }
+    });
+  }
+
+  pauseToastTimer(id) {
+    const state = this.toasts.get(id);
+    if (!state || state.closing || !state.options.pauseOnHover || !state.timeout) return;
+
+    const elapsed = Date.now() - state.timerStartedAt;
+    state.remainingDuration = Math.max(0, state.remainingDuration - elapsed);
+    this.clearToastTimer(state);
+    const bar = state.element.querySelector('.ca-progress-bar');
+    if (bar) {
+      bar.style.transition = 'none';
+      bar.style.width = `${(state.remainingDuration / state.options.duration) * 100}%`;
+    }
+  }
+
+  resumeToastTimer(id) {
+    const state = this.toasts.get(id);
+    if (!state || state.closing || !state.options.pauseOnHover || !(state.options.duration > 0) || state.timeout) return;
+
+    if (state.remainingDuration > 0) this.startToastTimer(state);
+    else this.closeToast(id, 'timer');
   }
 
   updateToast(id, options = {}) {
@@ -503,25 +583,40 @@ class CrystalAlert {
     if (!state || state.closing) return null;
     state.options = { ...state.options, ...options };
     this.renderToast(state);
-    return {
-      id,
-      close: () => this.closeToast(id),
-      update: (nextOptions = {}) => this.updateToast(id, nextOptions)
-    };
+    return this.createToastHandle(state);
   }
 
-  closeToast(id) {
+  closeToast(id, reason = 'programmatic') {
     const state = this.toasts.get(id);
     if (!state || state.closing) return false;
 
     state.closing = true;
-    if (state.timeout) clearTimeout(state.timeout);
-    state.timeout = null;
+    this.clearToastTimer(state);
     state.element.classList.add('hide');
-    state.element.addEventListener('transitionend', () => {
+    let finalized = false;
+    const finalize = () => {
+      if (finalized) return;
+      finalized = true;
+      clearTimeout(fallbackTimer);
+      state.element.removeEventListener('transitionend', onTransitionEnd);
       if (state.element.parentElement) state.element.remove();
       this.toasts.delete(id);
-    }, { once: true });
+      if (state.options.onClose && typeof state.options.onClose === 'function') {
+        try {
+          state.options.onClose(reason);
+        } catch (error) {
+          console.error('CrystalAlert toast onClose error:', error);
+        }
+      }
+      state.resolveClosed(reason);
+    };
+    const onTransitionEnd = (event) => {
+      if (event.target === state.element) finalize();
+    };
+    // Safety net: no transitionend fires with transition:none, reduced motion,
+    // hidden tabs or display:none.
+    const fallbackTimer = setTimeout(finalize, TOAST_EXIT_FALLBACK_MS);
+    state.element.addEventListener('transitionend', onTransitionEnd);
     return true;
   }
 

@@ -73,7 +73,7 @@
 
     <div class="cmd" role="group" aria-label="Install command">
       <span class="cmd-prompt" aria-hidden="true">$</span>
-      <code id="install-cmd">npm install crystal-alert</code>
+      <code id="install-cmd">pnpm add crystal-alert</code>
       <button class="cmd-copy" type="button" data-copy-target="#install-cmd" aria-label="Copy install command">
         <i class="fa-regular fa-copy" aria-hidden="true"></i><span>Copy</span>
       </button>
@@ -85,7 +85,7 @@
     </div>
 
     <dl class="facts">
-      <div><dt>Gzipped</dt><dd>&lt;5KB</dd></div>
+      <div><dt>Gzipped</dt><dd>&lt;6KB</dd></div>
       <div><dt>Dependencies</dt><dd>0</dd></div>
       <div><dt>Runtime</dt><dd>ES6+</dd></div>
     </dl>
@@ -136,7 +136,7 @@
     </article>
 
     <article class="tile tile-stat reveal">
-      <p class="big">&lt;5<small>KB</small></p>
+      <p class="big">&lt;6<small>KB</small></p>
       <h3>Light enough to forget.</h3>
       <p>Gzipped, no framework assumptions.</p>
     </article>
@@ -195,20 +195,22 @@
           </tr>
         </thead>
         <tbody>
-          <tr><th scope="row">Gzipped size</th><td class="is-crystal">4.8 KB</td><td>20.1 KB</td><td>15.9 KB</td></tr>
-          <tr><th scope="row">Minified size</th><td class="is-crystal">15.2 KB</td><td>77.3 KB</td><td>88.9 KB</td></tr>
+          <tr><th scope="row">Gzipped size</th><td class="is-crystal">5.3 KiB</td><td>20.1 KB</td><td>15.9 KB</td></tr>
+          <tr><th scope="row">Minified size</th><td class="is-crystal">17.9 KiB</td><td>77.3 KB</td><td>88.9 KB</td></tr>
           <tr><th scope="row">Runtime dependencies</th><td class="is-crystal">0</td><td>0</td><td>0</td></tr>
           <tr><th scope="row">Alerts and confirms</th><td class="is-crystal">Yes</td><td>Yes</td><td>Yes</td></tr>
-          <tr><th scope="row">Toasts</th><td class="is-crystal">Yes</td><td>Yes</td><td>Yes</td></tr>
+          <tr><th scope="row">Toast controls</th><td class="is-crystal"><code>pauseOnHover</code>, <code>showCloseButton</code>, <code>onClose(reason)</code></td><td>Close button; pause on hover by hand with <code>stopTimer</code> / <code>resumeTimer</code></td><td>Pause on hover (on by default), close button</td></tr>
+          <tr><th scope="row">Toast handle</th><td class="is-crystal"><code>id</code>, <code>close()</code>, <code>update()</code>, <code>closed</code> promise</td><td><code>Swal.update()</code> and <code>Swal.close()</code></td><td>No update API</td></tr>
+          <tr><th scope="row">Concurrent modal queue</th><td class="is-crystal">Built-in FIFO queue</td><td>No</td><td>No</td></tr>
           <tr><th scope="row">Promise-based API</th><td class="is-crystal">Yes</td><td>Yes</td><td>Callbacks</td></tr>
           <tr><th scope="row">Timers</th><td class="is-crystal">Yes, with progress bar</td><td>Yes, with progress bar</td><td>Toast timeout</td></tr>
-          <tr><th scope="row">Prompts and inputs</th><td class="is-crystal">7 types: text, email, password, number, textarea, select, checkbox</td><td>More: adds radio, range, file, date and others</td><td>Single text prompt</td></tr>
+          <tr><th scope="row">Prompts and inputs</th><td class="is-crystal">7 types: text, email, password, number, textarea, select, checkbox</td><td>More: adds radio, range, file, datetime-local and others</td><td>Single text prompt</td></tr>
           <tr><th scope="row">Loading, report and block UI</th><td class="is-crystal">Async button spinner only</td><td>Loading state on buttons</td><td>Yes, dedicated modules</td></tr>
           <tr><th scope="row">Theming</th><td class="is-crystal">CSS variables, dark and minimal themes</td><td>CSS and official theme packages</td><td>Options object</td></tr>
         </tbody>
       </table>
     </div>
-    <p class="compare-note">Sizes are gzip -9 of the official CDN bundles (CrystalAlert JS + CSS; SweetAlert2 v11.26.25 <code>sweetalert2.all.min.js</code>; Notiflix v3.2.8 <code>notiflix-aio</code>), measured Oct 2026, 1 KB = 1024 B. SweetAlert2 has the broader feature set and a larger ecosystem; pick it if you need what it adds.</p>
+    <p class="compare-note">Sizes are gzip -9 of the official CDN bundles (CrystalAlert JS + CSS; SweetAlert2 v11.26.25 <code>sweetalert2.all.min.js</code>; Notiflix v3.2.8 <code>notiflix-aio</code>), measured Oct 2026, 1 KiB = 1024 B. SweetAlert2 has the broader feature set and a larger ecosystem; pick it if you need what it adds.</p>
   </div>
 </section>
 
@@ -353,7 +355,7 @@
 <section class="section" id="api">
   <header class="section-head reveal">
     <h2>The whole API <em>fits on one screen.</em></h2>
-    <p>Install it, then three methods and a prompt helper. That is it.</p>
+    <p>Install it, then use a small API for dialogs, prompts, themes, and toast lifecycles.</p>
   </header>
 
   <div class="docs reveal">
@@ -458,7 +460,10 @@ if (result === true) {
           <div><dt>icon / iconHtml</dt><dd>Built-in or custom icon</dd></div>
           <div><dt>duration</dt><dd>Auto-dismiss in ms; use <code>0</code> for a persistent toast</dd></div>
           <div><dt>position</dt><dd><code>top-right</code>, <code>top-left</code>, <code>bottom-right</code>, or <code>bottom-left</code></dd></div>
-          <div><dt>returns</dt><dd>A handle: <code>{ id, close(), update(options) }</code></dd></div>
+          <div><dt>pauseOnHover</dt><dd>Pause the timer while the pointer is over the toast</dd></div>
+          <div><dt>showCloseButton</dt><dd>Show a button that dismisses the toast</dd></div>
+          <div><dt>onClose</dt><dd>Called after the exit animation with the dismiss reason</dd></div>
+          <div><dt>returns</dt><dd>A handle: <code>{ id, close(), update(), closed }</code></dd></div>
         </dl>
 
         <h4>Update one notification</h4>
@@ -481,6 +486,22 @@ uploadToast.update({
 
 // Close it programmatically when needed.
 uploadToast.close();</code></pre>
+        </div>
+
+        <h4>Pause, close, and await dismissal</h4>
+        <p>Use <code>pauseOnHover</code> for messages that need time to read. A close button is optional, and <code>closed</code> resolves after the exit animation with the reason for dismissal.</p>
+        <div class="codeblock">
+          <pre class="code"><code data-lang="js">const toast = Crystal.toast({
+  title: 'Session expires soon',
+  text: 'Move the pointer over this toast to pause it.',
+  duration: 5000,
+  pauseOnHover: true,
+  showCloseButton: true,
+  onClose: (reason) => handleDismissedToast(reason)
+});
+
+const reason = await toast.closed;
+// reason: 'timer', 'button', 'click', or 'programmatic'</code></pre>
         </div>
 
         <h4>Close by id or close all</h4>
